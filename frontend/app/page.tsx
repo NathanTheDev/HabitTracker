@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 
 export default function Auth() {
@@ -9,15 +9,17 @@ export default function Auth() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: any) => {
         e.preventDefault();
         setLoading(true);
         setError('');
 
         try {
-            const response = await axios.post('http://localhost:3001/authenticate', {
+            const response = await axios.post('http://localhost:3001/auth/authenticate', {
                 email,
             });
+
+            console.log(response);
 
         } catch (err: any) {
             setError(err.response?.data?.message || 'Login failed');
@@ -40,7 +42,7 @@ export default function Auth() {
                         </div>
                     )}
 
-                    <form className="space-y-4 md:space-y-6" action="#">
+                    <form className="space-y-4 md:space-y-6" onSubmit={ handleSubmit }>
 
                         <label className="block mb-2 text-sm font-medium text-gray-900">Your email</label>
                         <input
@@ -49,7 +51,7 @@ export default function Auth() {
                             id="email"
                             className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
                             placeholder="example@email.com"
-                            required=""
+                            required={true}
                             onChange={(e) => setEmail(e.target.value)}
                         />
 

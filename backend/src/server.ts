@@ -1,6 +1,6 @@
 
 import express from 'express';
-import type { Request, Response } from 'express';
+import authRoutes from "./routes/auth.route.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -14,28 +14,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/', (req: Request, res: Response) => {
-  res.json({ message: 'Hello from Express + TypeScript!' });
-});
+app.use("/auth", authRoutes);
 
-app.get('/api/data', (req: Request, res: Response) => {
-  res.json({
-    data: 'Some data from the server',
-    timestamp: new Date().toISOString()
-  });
-});
-
-app.post('/api/data', (req: Request, res: Response) => {
-  const { name } = req.body;
-  res.json({
-    message: `Hello, ${name}!`,
-    received: req.body
-  });
-});
-
-app.use((req: Request, res: Response) => {
-  res.status(404).json({ error: 'Not found' });
-});
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
