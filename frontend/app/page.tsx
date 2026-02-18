@@ -15,8 +15,14 @@ export default function Auth() {
         setError('');
 
         try {
-            const response = await axios.post('http://localhost:3001/auth/authenticate', {
-                email,
+            const response = await fetch('http://localhost:3001/auth/authenticate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                })
             });
 
             console.log(response);

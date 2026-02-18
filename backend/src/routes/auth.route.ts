@@ -1,10 +1,9 @@
 
 import express from 'express';
-import { AuthController } from '../controllers/auth.js';
+import AuthController from '../controllers/auth.js';
 
 const app = express();
-const authController = new AuthController();
 
-app.post("/authenticate", authController.authenticate);
+app.post("/authenticate", AuthController.authenticate);
 
 export default app;

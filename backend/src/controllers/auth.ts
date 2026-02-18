@@ -7,6 +7,7 @@ export default class AuthController {
     static authenticate = async (req: Request, res: Response): Promise<void> => {
         try {
             const { email } = req.body;
+            console.log("email found:", email);
             const { error } = await supabase.auth.signInWithOtp({
                 email: email,
             });

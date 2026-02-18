@@ -11,10 +11,10 @@ const getEnv = (key: string, required = true): string => {
   return value!;
 };
 
-export const IP = getEnv("IP", false) || "localhost";
-export const PORT = parseInt(getEnv("PORT", false) || "8000");
+//export const IP = getEnv("IP", false) || "localhost";
+//export const PORT = parseInt(getEnv("PORT", false) || "8000");
 
-export const JWT_SECRET_KEY = getEnv("JWT_SECRET_KEY");
+//export const JWT_SECRET_KEY = getEnv("JWT_SECRET_KEY");
 export const SUPABASE_URL = getEnv("SUPABASE_URL");
 export const SUPABASE_SERVICE_ROLE_KEY = getEnv("SUPABASE_SERVICE_ROLE_KEY");
 
