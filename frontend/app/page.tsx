@@ -67,7 +67,8 @@ export default function Auth() {
                     )}
 
                     {step === 'email' ? (
-                        <EmailForm handleSubmit={handleEmailSubmit} setEmail={setEmail} loading={loading} />
+                        <OtpForm handleSubmit={handleOtpSubmit} setOtp={setOtp} loading={loading} />
+                        //<EmailForm handleSubmit={handleEmailSubmit} setEmail={setEmail} loading={loading} />
                     ) : (
                             <OtpForm handleSubmit={handleOtpSubmit} setOtp={setOtp} loading={loading} />
                         )}

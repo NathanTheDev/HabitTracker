@@ -1,6 +1,6 @@
 
 import type { Request, Response } from "express";
-import { supabase } from "../util.js";
+import { authSupabase, supabase } from "../util.js";
 import { COOKIE_SAME_SITE } from "../config.js";
 
 export default class AuthController {
@@ -8,7 +8,7 @@ export default class AuthController {
         try {
             const { email } = req.body;
             console.log("email found:", email);
-            const { error } = await supabase.auth.signInWithOtp({
+            const { error } = await authSupabase.auth.signInWithOtp({
                 email: email,
                 options: {
                     shouldCreateUser: true,
@@ -33,7 +33,7 @@ export default class AuthController {
         try {
             const { otp: token, email } = req.body;
 
-            const { data, error } = await supabase.auth.verifyOtp({
+            const { data, error } = await authSupabase.auth.verifyOtp({
                 email,
                 token,
                 type: "email" as const,
