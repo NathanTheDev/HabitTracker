@@ -8,44 +8,44 @@ type Props = {
 }
 
 export const OtpForm = ({ handleSubmit, setOtp, loading }: Props) => {
-    const inputsRef = useRef<Array<HTMLInputElement | null>>([])
+    const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
 
     const update = (vals: string[]) => {
-        setOtp(vals.join(""))
+        setOtp(vals.join(""));
     }
 
     const getValues = () =>
-        inputsRef.current.map((el) => el?.value ?? "")
+        inputsRef.current.map((el) => el?.value ?? "");
 
     const handleChange = (index: number, value: string) => {
-        const sanitized = value.replace(/\D/g, "").slice(-1)
-        const el = inputsRef.current[index]
-        if (el) el.value = sanitized
-        update(getValues())
+        const sanitized = value.replace(/\D/g, "").slice(-1);
+        const el = inputsRef.current[index];
+        if (el) el.value = sanitized;
+        update(getValues());
 
         if (sanitized && index < 5) {
-            inputsRef.current[index + 1]?.focus()
+            inputsRef.current[index + 1]?.focus();
         }
     }
 
     const handleKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Backspace" && !inputsRef.current[index]?.value && index > 0) {
-            inputsRef.current[index - 1]?.focus()
+            inputsRef.current[index - 1]?.focus();
         }
     }
 
     const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
-        e.preventDefault()
-        const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6)
+        e.preventDefault();
+        const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
         pasted.split("").forEach((char, i) => {
             if (inputsRef.current[i]) {
-                inputsRef.current[i]!.value = char
+                inputsRef.current[i]!.value = char;
             }
         })
-        update(getValues())
+        update(getValues());
 
-        const nextEmpty = pasted.length < 6 ? pasted.length : 5
-        inputsRef.current[nextEmpty]?.focus()
+        const nextEmpty = pasted.length < 6 ? pasted.length : 5;
+        inputsRef.current[nextEmpty]?.focus();
     }
 
     return (
