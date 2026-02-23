@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import axios from 'axios';
+import { EmailForm } from './compnents/auth/email';
 
 export default function Auth() {
     const [email, setEmail] = useState('');
@@ -48,27 +49,8 @@ export default function Auth() {
                         </div>
                     )}
 
-                    <form className="space-y-4 md:space-y-6" onSubmit={ handleSubmit }>
+                    <EmailForm handleSubmit={handleSubmit} setEmail={setEmail} loading={loading} />
 
-                        <label className="block mb-2 text-sm font-medium text-gray-900">Your email</label>
-                        <input
-                            type="email"
-                            name="email"
-                            id="email"
-                            className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
-                            placeholder="example@email.com"
-                            required={true}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-
-                        <button
-                            type="submit"
-                            className="w-full text-white bg-purple-600 hover:bg-purple-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center hover: cursor-pointer"
-                            disabled={loading}
-                        >
-                            {loading ? "Signing in..." : "Sign in"}
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>

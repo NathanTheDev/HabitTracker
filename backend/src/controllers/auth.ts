@@ -10,6 +10,9 @@ export default class AuthController {
             console.log("email found:", email);
             const { error } = await supabase.auth.signInWithOtp({
                 email: email,
+                options: {
+                    shouldCreateUser: true,
+                },
             });
             if (error) {
                 const message = {
