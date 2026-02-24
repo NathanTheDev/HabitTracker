@@ -43,6 +43,13 @@ export default function Auth() {
             });
 
             console.log("WOOOOOOOOOOOOOOOOOOO");
+            const response = await axios.get('http://localhost:3001/user/me', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            console.log(response);
 
         } catch (err: any) {
             setError(err.response?.data?.message || 'Invalid OTP');
