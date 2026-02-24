@@ -1,6 +1,8 @@
 
 import express from 'express';
 import authRoutes from "./routes/auth.route.js";
+import userRoutes from "./routes/user.route.js";
+import { extractToken } from './util.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -16,6 +18,9 @@ app.use((req, res, next) => {
 
 app.use("/auth", authRoutes);
 
+app.use(extractToken);
+
+app.use("/user", userRoutes);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
