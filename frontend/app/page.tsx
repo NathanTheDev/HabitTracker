@@ -5,6 +5,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { EmailForm } from './compnents/auth/email';
 import { OtpForm } from './compnents/auth/otp';
+import { authenticate } from './lib/auth';
 
 export default function Auth() {
     const [email, setEmail] = useState('');
@@ -19,12 +20,8 @@ export default function Auth() {
         setError('');
 
         try {
-            await axios.post('http://localhost:3001/auth/authenticate', {
-                email: email,
-            });
-
+            authenticate(email);
             setStep('otp');
-
         } catch (err: any) {
             setError(err.response?.data?.message || 'Login failed');
         } finally {
@@ -37,19 +34,9 @@ export default function Auth() {
         setLoading(true);
         setError('');
 
+        magic(email, otp);
+
         try {
-            await axios.post('http://localhost:3001/auth/magic', {
-                email, otp
-            });
-
-            console.log("WOOOOOOOOOOOOOOOOOOO");
-            const response = await axios.get('http://localhost:3001/user/me', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-
-            console.log(response);
 
         } catch (err: any) {
             setError(err.response?.data?.message || 'Invalid OTP');
