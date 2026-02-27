@@ -10,9 +10,7 @@ An AI-powered habit tracker that automatically makes habits easier or harder bas
 Built with **Next.js** (frontend), **Express** (backend), and the **OpenAI API**.
 
 ## Features
-
-- Adaptive habit difficulty
-- AI-generated adjustments
+- AI-generated dynamic habit difficulty
 - Daily completion tracking
 - Custom habits
 
@@ -28,8 +26,8 @@ Built with **Next.js** (frontend), **Express** (backend), and the **OpenAI API**
 1. Clone the repo
 
 ```bash
-git clone https://github.com/yourusername/adaptive-habit-tracker.git
-cd adaptive-habit-tracker
+git clone https://github.com/NathanTheDev/HabitTracker.git
+cd HabitTracker
 ```
 
 2. Install dependencies
