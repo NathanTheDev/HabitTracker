@@ -2,10 +2,9 @@
 'use client';
 
 import { useState } from 'react';
-import axios from 'axios';
 import { EmailForm } from './compnents/auth/email';
 import { OtpForm } from './compnents/auth/otp';
-import { authenticate } from './lib/auth';
+import { authenticate, magic } from './lib/auth';
 
 export default function Auth() {
     const [email, setEmail] = useState('');
