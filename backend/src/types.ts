@@ -1,15 +1,11 @@
 
+import { User } from "@supabase/supabase-js";
 import type { Request } from "express";
 
 declare global {
   namespace Express {
     interface Request {
-      user?: JWTPayload;
-      userinfo?: {
-        id: string;
-        role: string;
-      };
-      accessToken: string;
+      user?: User;
     }
   }
 }

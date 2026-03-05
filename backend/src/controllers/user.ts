@@ -9,7 +9,7 @@ export default class UserController {
                 .schema("public")
                 .from("users")
                 .select()
-                .eq("id", req.user!.sub)
+                .eq("id", req.user!.id)
                 .maybeSingle();
 
             if (error) {

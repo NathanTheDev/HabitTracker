@@ -4,7 +4,7 @@ import UserController from '../controllers/user.js';
 
 const app = express();
 
-app.post("/me", UserController.me);
+app.get("/me", UserController.me);
 
 export default app;
 
