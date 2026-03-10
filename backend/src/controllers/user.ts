@@ -1,37 +1,30 @@
 
-import type { Request, Response } from "express";
+import { Request, Response } from "express";
 import { supabase } from "../util.js";
+import Session from "supertokens-node/recipe/session";
 
 export default class UserController {
-    static me = async (req: Request, res: Response): Promise<void> => {
-        try {
-            const { data, error } = await supabase
-                .schema("public")
-                .from("users")
-                .select()
-                .eq("id", req.user!.id)
-                .maybeSingle();
+    static async me(req: Request, res: Response) {
+        const session = await Session.getSession(req, res);
+        const userId = session.getUserId();
 
-            if (error) {
-                const message = { error: error.message };
-                res.status(500).json(message);
-                return;
-            }
+        const { data, error } = await supabase
+            .from("users")
+            .select("*")
+            .eq("id", userId)
+            .maybeSingle();
 
-            console.log("data, error", data, error);
+        if (error) {
+            res.status(500).json({ error: error.message });
+            return;
+        }
 
-            if (!data) {
-                console.log("I exited here");
-                const message = { error: "User profile not found" };
-                res.status(404).json(message);
-                return;
-            }
+        if (!data) {
+            res.status(404).json({ error: "User not found" });
+            return;
+        }
 
-            res.json(data)
-        } catch (err) {
-            console.log("I caught an error");
-            res.status(500).json({ message: "Internal server error" });
+        res.json(data);
     }
-  };
 }
 
