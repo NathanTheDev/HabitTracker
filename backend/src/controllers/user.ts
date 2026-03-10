@@ -18,7 +18,10 @@ export default class UserController {
                 return;
             }
 
+            console.log("data, error", data, error);
+
             if (!data) {
+                console.log("I exited here");
                 const message = { error: "User profile not found" };
                 res.status(404).json(message);
                 return;
