@@ -1,6 +1,11 @@
 
-import { User } from "@supabase/supabase-js";
-import type { Request } from "express";
+export interface User {
+  id: string;
+  supertokens_id: string;
+  email: string | null;
+  phone: string | null;
+  created_at: string;
+}
 
 declare global {
   namespace Express {
