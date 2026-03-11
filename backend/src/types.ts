@@ -1,4 +1,3 @@
-
 export interface User {
   id: string;
   supertokens_id: string;
@@ -36,4 +35,3 @@ export interface JWTPayload {
   session_id: string;
   is_anonymous: boolean;
 }
-
