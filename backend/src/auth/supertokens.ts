@@ -1,124 +1,65 @@
 
-// supertokens.ts
 import SuperTokens from "supertokens-node";
 import Session from "supertokens-node/recipe/session";
-import Passwordless, {
-  RecipeInterface as PasswordlessRecipeInterface,
-  User as PasswordlessUser,
-  TypeInput as PasswordlessTypeInput,
-} from "supertokens-node/recipe/passwordless";
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import Passwordless from "supertokens-node/recipe/passwordless";
+import { supabase } from "../util.js";
 
-// --------------------
-// Supabase setup
-// --------------------
-const supabase: SupabaseClient = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_KEY!
-);
+export function initSuperTokens() {
+  SuperTokens.init({
+    framework: "express",
+    supertokens: {
+      connectionURI: process.env.SUPERTOKENS_CONNECTION_URI!,
+    },
+    appInfo: {
+      appName: "MyApp",
+      apiDomain: `http://localhost:${process.env.PORT || 3001}`,
+      websiteDomain: process.env.FRONTEND_URL!,
+      apiBasePath: "/auth",
+      websiteBasePath: "/auth",
+    },
+    recipeList: [
+      Passwordless.init({
+        flowType: "USER_INPUT_CODE",
+        contactMethod: "EMAIL",
 
-// Define Supabase table row type
-interface SupabaseUserRow {
-  id: string;
-  email: string;
-}
-
-// --------------------
-// SuperTokens initialization
-// --------------------
-SuperTokens.init({
-  framework: "express",
-  supertokens: {
-    connectionURI: "https://try.supertokens.io", // replace with your self-hosted core if needed
-    apiKey: process.env.SUPERTOKENS_API_KEY,
-  },
-  appInfo: {
-    appName: "MyApp",
-    apiDomain: "http://localhost:3001", // Express backend
-    websiteDomain: "http://localhost:3000", // Next.js frontend
-  },
-  recipeList: [
-    Passwordless.init({
-      contactMethod: "EMAIL",
-      flowType: "USER_INPUT_CODE", // OTP login
-      emailDelivery: {
-        service: {
-          sendEmail: async (
-            input: PasswordlessTypeInput["emailDelivery"]["service"]["sendEmail"]
-          ) => {
-            const email = input.email!;
-            const code = input.userInputCode!;
-            const link = input.urlWithLinkCode;
-            console.log("Send OTP to:", email, "code:", code, "link:", link);
-
-            // TODO: integrate your real email service here
-          },
-        },
-      },
-      override: {
-        functions: (originalImplementation): Partial<PasswordlessRecipeInterface> => {
-          return {
+        override: {
+          apis: (originalImplementation) => ({
             ...originalImplementation,
-            // --------------------
-            // Create user in Supabase if not exists
-            // --------------------
-            createUser: async ({
-              email,
-              userContext,
-            }: {
-              email: string;
-              userContext: any;
-            }): Promise<PasswordlessUser> => {
-              const { data, error } = await supabase
-                .from<SupabaseUserRow, SupabaseUserRow>("users")
-                .insert([{ email }])
-                .select("*")
-                .single();
-              if (error) throw error;
-              return { id: data.id, email: data.email };
-            },
 
-            // --------------------
-            // Get user by email
-            // --------------------
-            getUserByEmail: async ({
-              email,
-              userContext,
-            }: {
-              email: string;
-              userContext: any;
-            }): Promise<PasswordlessUser | null> => {
-              const { data, error } = await supabase
-                .from<SupabaseUserRow, SupabaseUserRow>("users")
-                .select("*")
-                .eq("email", email)
-                .single();
-              if (error || !data) return null;
-              return { id: data.id, email: data.email };
-            },
+            consumeCodePOST: async (input) => {
+              const response =
+                await originalImplementation.consumeCodePOST!(input);
 
-            // --------------------
-            // Get user by ID
-            // --------------------
-            getUserById: async ({
-              userId,
-              userContext,
-            }: {
-              userId: string;
-              userContext: any;
-            }): Promise<PasswordlessUser | null> => {
-              const { data, error } = await supabase
-                .from<SupabaseUserRow, SupabaseUserRow>("users")
-                .select("*")
-                .eq("id", userId)
-                .single();
-              if (error || !data) return null;
-              return { id: data.id, email: data.email };
+              if (
+                response.status === "OK" &&
+                response.createdNewRecipeUser
+              ) {
+                const { user } = response;
+                const email = user.emails[0] ?? null;
+                const phone = user.phoneNumbers[0] ?? null;
+
+                const { error } = await supabase.from("users").upsert(
+                  {
+                    supertokens_id: user.id,
+                    email,
+                    phone,
+                    created_at: new Date().toISOString(),
+                  },
+                  { onConflict: "supertokens_id" }
+                );
+
+                if (error) {
+                  console.error("Supabase upsert failed:", error.message);
+                }
+              }
+
+              return response;
             },
-          };
+          }),
         },
-      },
-    }),
-    Session.init(), // default session recipe
-  ],
-});
+      }),
+
+      Session.init(),
+    ],
+  });
+}
