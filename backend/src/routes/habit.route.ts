@@ -10,4 +10,6 @@ router.post("/", requireAuth, HabitController.create);
 
 router.patch("/:id/complete", requireAuth, HabitController.patch);
 
+router.get("/", requireAuth, HabitController.getAll);
+
 export default router;

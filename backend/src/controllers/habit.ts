@@ -25,10 +25,10 @@ export default class HabitController {
     }
 
     return res.status(201).json({ habit: data });
-  };
+  }
 
   static async patch(req: Request, res: Response) {
-        const { id } = req.params;
+    const { id } = req.params;
     const { completed } = req.body;
 
     if (typeof completed !== "boolean") {
@@ -87,5 +87,20 @@ export default class HabitController {
     }
 
     return res.json({ habit: data });
+  }
+
+  static async getAll(req: Request, res: Response) {
+    const { data, error } = await supabase
+      .from("habits")
+      .select("*")
+      .eq("creator_id", req.user!.id)
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      console.error("failed to fetch habits:", error.message);
+      return res.status(500).json({ error: "Failed to fetch habits" });
+    }
+
+    return res.json({ habits: data });
   }
 }
