@@ -2,7 +2,6 @@
 
 import { useSessionContext } from "supertokens-auth-react/recipe/session";
 import { redirectToAuth } from "supertokens-auth-react";
-import { useEffect } from "react";
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const session = useSessionContext();
