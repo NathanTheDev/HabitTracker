@@ -1,12 +1,12 @@
-import { SuperTokensProvider } from "./compnents/auth/SuperTokensProvider";
+import { DynamicSuperTokens } from "./compnents/auth/DynamicSupertokens";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <SuperTokensProvider>
+        <DynamicSuperTokens>
           {children}
-        </SuperTokensProvider>
+        </DynamicSuperTokens>
       </body>
     </html>
   );

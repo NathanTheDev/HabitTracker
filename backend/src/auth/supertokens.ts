@@ -1,4 +1,3 @@
-
 import SuperTokens from "supertokens-node";
 import Session from "supertokens-node/recipe/session";
 import Passwordless from "supertokens-node/recipe/passwordless";
@@ -11,7 +10,7 @@ export function initSuperTokens() {
       connectionURI: process.env.SUPERTOKENS_CONNECTION_URI!,
     },
     appInfo: {
-      appName: "MyApp",
+      appName: "HabitTracker",
       apiDomain: `http://localhost:${process.env.PORT || 3001}`,
       websiteDomain: process.env.FRONTEND_URL!,
       apiBasePath: "/auth",
@@ -21,19 +20,16 @@ export function initSuperTokens() {
       Passwordless.init({
         flowType: "USER_INPUT_CODE",
         contactMethod: "EMAIL",
-
         override: {
           apis: (originalImplementation) => ({
             ...originalImplementation,
-
             consumeCodePOST: async (input) => {
-              const response =
-                await originalImplementation.consumeCodePOST!(input);
+              const response = await originalImplementation.consumeCodePOST!(input);
 
-              if (
-                response.status === "OK" &&
-                response.createdNewRecipeUser
-              ) {
+              console.log("consumeCodePOST response:", response.status);
+
+              if (response.status === "OK" && response.createdNewRecipeUser) {
+                console.log("New user, upserting to Supabase:", response.user.id);
                 const { user } = response;
                 const email = user.emails[0] ?? null;
                 const phone = user.phoneNumbers[0] ?? null;
@@ -51,6 +47,8 @@ export function initSuperTokens() {
                 if (error) {
                   console.error("Supabase upsert failed:", error.message);
                 }
+              } else {
+                console.log("Existing user, skipping upsert");
               }
 
               return response;
@@ -58,8 +56,9 @@ export function initSuperTokens() {
           }),
         },
       }),
-
-      Session.init(),
+      Session.init({
+        getTokenTransferMethod: () => "cookie" as const,
+      }),
     ],
   });
 }

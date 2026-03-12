@@ -23,14 +23,17 @@ export function useUser(): UseUserResult {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasFetched, setHasFetched] = useState(false);
 
   useEffect(() => {
     if (session.loading) return;
-
     if (!session.doesSessionExist) {
       setIsLoading(false);
       return;
     }
+    if (hasFetched) return;
+
+    setHasFetched(true);
 
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/me`, {
       credentials: "include",
@@ -42,7 +45,7 @@ export function useUser(): UseUserResult {
       .then(({ user }) => setUser(user))
       .catch((err) => setError(err.message))
       .finally(() => setIsLoading(false));
-  }, [session]);
+  }, [session, hasFetched]);
 
   return {
     user,
