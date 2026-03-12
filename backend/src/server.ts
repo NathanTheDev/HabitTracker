@@ -4,6 +4,7 @@ import cors from "cors";
 import { middleware, errorHandler } from "supertokens-node/framework/express";
 import { initSuperTokens } from "./auth/supertokens.js";
 import userRouter from "./routes/user.route.js";
+import habitRouter from "./routes/habit.route.js";
 import { getAllCORSHeaders } from "supertokens-node";
 
 initSuperTokens();
@@ -24,6 +25,7 @@ app.use(express.json());
 app.use(middleware());
 
 app.use("/user", userRouter);
+app.use("/habits", habitRouter);
 
 app.get("/health", (_, res) => {
   res.json({ ok: true });
