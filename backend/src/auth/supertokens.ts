@@ -28,11 +28,12 @@ export function initSuperTokens() {
 
               console.log("consumeCodePOST response:", response.status);
 
-              if (response.status === "OK" && response.createdNewRecipeUser) {
-                console.log("New user, upserting to Supabase:", response.user.id);
+              if (response.status === "OK") {
                 const { user } = response;
                 const email = user.emails[0] ?? null;
                 const phone = user.phoneNumbers[0] ?? null;
+
+                console.log("Upserting user to Supabase:", user.id);
 
                 const { error } = await supabase.from("users").upsert(
                   {
@@ -47,8 +48,6 @@ export function initSuperTokens() {
                 if (error) {
                   console.error("Supabase upsert failed:", error.message);
                 }
-              } else {
-                console.log("Existing user, skipping upsert");
               }
 
               return response;
