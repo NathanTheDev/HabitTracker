@@ -1,0 +1,35 @@
+// Switch provider to "postgresql" and update DATABASE_URL for production
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Habit {
+  id          String            @id @default(cuid())
+  userId      String            // SuperTokens user ID — no FK, ST owns user data
+  name        String
+  description String?
+  frequency   String            @default("DAILY") // "DAILY" | "WEEKLY"
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  completions HabitCompletion[]
+
+  @@index([userId])
+}
+
+model HabitCompletion {
+  id          String   @id @default(cuid())
+  habitId     String
+  habit       Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  completedAt DateTime
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  @@unique([habitId, completedAt]) // one completion per habit per day
+  @@index([habitId])
+}
