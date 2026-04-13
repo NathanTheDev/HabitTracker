@@ -6,6 +6,8 @@ export interface Habit {
   name: string;
   description?: string;
   frequency: Frequency;
+  quantity?: number;
+  emoji?: string;
   createdAt: string;
   updatedAt: string;
   completions?: HabitCompletion[];

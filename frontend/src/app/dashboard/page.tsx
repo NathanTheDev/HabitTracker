@@ -6,7 +6,7 @@ import { Plus } from "lucide-react";
 import type { Habit } from "@/lib/types";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { ConsistencyChart } from "@/components/dashboard/ConsistencyChart";
-import { HabitCard } from "@/components/dashboard/HabitCard";
+import { SimpleHabitCard, QuantityCard } from "@/components/dashboard/habit-card";
 import { Button } from "@/components/ui/button";
 
 const today = new Date().toISOString();
@@ -17,7 +17,7 @@ const PLACEHOLDER_HABITS: Habit[] = [
     id: "1",
     userId: "placeholder",
     name: "Morning run",
-    description: "30 min outside",
+    emoji: "🏃",
     frequency: "DAILY",
     createdAt: today,
     updatedAt: today,
@@ -27,7 +27,8 @@ const PLACEHOLDER_HABITS: Habit[] = [
     id: "2",
     userId: "placeholder",
     name: "Read",
-    description: "At least 20 pages",
+    emoji: "📚",
+    quantity: 20,
     frequency: "DAILY",
     createdAt: today,
     updatedAt: today,
@@ -37,7 +38,8 @@ const PLACEHOLDER_HABITS: Habit[] = [
     id: "3",
     userId: "placeholder",
     name: "Meditate",
-    description: "10 min session",
+    emoji: "🧘",
+    quantity: 10,
     frequency: "DAILY",
     createdAt: today,
     updatedAt: today,
@@ -47,7 +49,8 @@ const PLACEHOLDER_HABITS: Habit[] = [
     id: "4",
     userId: "placeholder",
     name: "Drink water",
-    description: "8 glasses",
+    emoji: "💧",
+    quantity: 8,
     frequency: "DAILY",
     createdAt: today,
     updatedAt: today,
@@ -55,42 +58,21 @@ const PLACEHOLDER_HABITS: Habit[] = [
   },
 ];
 
-function isTodayCompleted(habit: Habit): boolean {
-  if (!habit.completions?.length) return false;
-  const todayStr = new Date().toDateString();
-  return habit.completions.some(
-    (c) => new Date(c.completedAt).toDateString() === todayStr
-  );
-}
-
 export default function DashboardPage() {
-  const [habits, setHabits] = useState<Habit[]>(PLACEHOLDER_HABITS);
+  const [progress, setProgress] = useState<Record<string, number>>({});
 
-  function handleComplete(id: string) {
-    setHabits((prev) =>
-      prev.map((h) =>
-        h.id === id
-          ? {
-              ...h,
-              completions: [
-                ...(h.completions ?? []),
-                {
-                  id: `c-${Date.now()}`,
-                  habitId: id,
-                  completedAt: new Date().toISOString(),
-                  createdAt: new Date().toISOString(),
-                },
-              ],
-            }
-          : h
-      )
-    );
+  function handleSetProgress(id: string, value: number) {
+    setProgress((prev) => ({ ...prev, [id]: value }));
   }
 
-  const pending = habits.filter((h) => !isTodayCompleted(h));
-  const completed = habits.filter((h) => isTodayCompleted(h));
+  function isCompleted(habit: Habit) {
+    return (progress[habit.id] ?? 0) >= (habit.quantity ?? 1);
+  }
+
+  const pending = PLACEHOLDER_HABITS.filter((h) => !isCompleted(h));
+  const completed = PLACEHOLDER_HABITS.filter((h) => isCompleted(h));
   const doneCount = completed.length;
-  const totalCount = habits.length;
+  const totalCount = PLACEHOLDER_HABITS.length;
 
   return (
     <main className="min-h-screen bg-background">
@@ -114,7 +96,7 @@ export default function DashboardPage() {
 
         {/* Consistency chart */}
         <div className="mb-6">
-          <ConsistencyChart habits={habits} />
+          <ConsistencyChart habits={PLACEHOLDER_HABITS} />
         </div>
 
         {/* Today's habits */}
@@ -130,14 +112,11 @@ export default function DashboardPage() {
 
         {pending.length > 0 && (
           <div className="space-y-3 mb-6">
-            {pending.map((h) => (
-              <HabitCard
-                key={h.id}
-                habit={h}
-                completedToday={false}
-                onComplete={handleComplete}
-              />
-            ))}
+            {pending.map((h) =>
+              h.quantity != null
+                ? <QuantityCard key={h.id} habit={h} progress={progress[h.id] ?? 0} onSetProgress={handleSetProgress} />
+                : <SimpleHabitCard key={h.id} habit={h} progress={progress[h.id] ?? 0} onSetProgress={handleSetProgress} />
+            )}
           </div>
         )}
 
@@ -147,14 +126,11 @@ export default function DashboardPage() {
               Completed
             </p>
             <div className="space-y-3">
-              {completed.map((h) => (
-                <HabitCard
-                  key={h.id}
-                  habit={h}
-                  completedToday={true}
-                  onComplete={handleComplete}
-                />
-              ))}
+              {completed.map((h) =>
+              h.quantity != null
+                ? <QuantityCard key={h.id} habit={h} progress={progress[h.id] ?? 0} onSetProgress={handleSetProgress} />
+                : <SimpleHabitCard key={h.id} habit={h} progress={progress[h.id] ?? 0} onSetProgress={handleSetProgress} />
+            )}
             </div>
           </>
         )}
