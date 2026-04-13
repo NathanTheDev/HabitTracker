@@ -1,12 +1,4 @@
-"use client";
-
-import { canHandleRoute, getRoutingComponent } from "supertokens-auth-react/ui";
-import { EmailPasswordPreBuiltUI } from "supertokens-auth-react/recipe/emailpassword/prebuiltui";
-import { notFound } from "next/navigation";
-
+// STUB: auth page not implemented in this phase
 export default function AuthPage() {
-  if (canHandleRoute([EmailPasswordPreBuiltUI])) {
-    return getRoutingComponent([EmailPasswordPreBuiltUI]);
-  }
-  notFound();
+  return null;
 }

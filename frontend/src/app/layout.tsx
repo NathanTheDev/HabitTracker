@@ -1,9 +1,4 @@
-"use client";
-
-import { SuperTokensWrapper } from "supertokens-auth-react";
-import { initSuperTokens } from "@/lib/supertokens";
-
-initSuperTokens();
+import "./globals.css";
 
 export default function RootLayout({
   children,
@@ -12,8 +7,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <SuperTokensWrapper>{children}</SuperTokensWrapper>
+      <body className="bg-background text-foreground font-sans antialiased">
+        {children}
       </body>
     </html>
   );
