@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import EmojiPicker, { type EmojiClickData, Theme, Categories } from "emoji-picker-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function NewHabitPage() {
   const router = useRouter();
@@ -101,14 +102,14 @@ export default function NewHabitPage() {
               </div>
 
               {/* Name input */}
-              <input
+              <Input
                 id="name"
                 type="text"
                 required
                 placeholder="e.g. Morning run"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="flex-1 h-10 rounded-[12px] border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition"
+                className="flex-1"
               />
             </div>
           </div>
@@ -119,14 +120,13 @@ export default function NewHabitPage() {
               Quantity
               <span className="ml-1.5 text-xs font-normal text-muted-foreground">optional</span>
             </label>
-            <input
+            <Input
               id="quantity"
               type="number"
               min={1}
               placeholder="e.g. 5"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              className="w-full h-10 rounded-[12px] border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition"
             />
             <p className="text-xs text-muted-foreground">
               How many times per day? (e.g. Read — 5 pages)
