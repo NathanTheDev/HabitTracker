@@ -102,7 +102,7 @@ const RANGES: { key: Range; label: string }[] = [
   { key: "all", label: "All time" },
 ];
 
-export function ConsistencyChart({ habits }: Props) {
+export function CompletedChart({ habits }: Props) {
   const [range, setRange] = useState<Range>("week");
   const data = useMemo(() => buildChartData(habits, range), [habits, range]);
 

@@ -6,7 +6,7 @@ import { Plus } from "lucide-react";
 import type { Habit } from "@/lib/types";
 import { api } from "@/lib/api";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
-import { ConsistencyChart } from "@/components/dashboard/ConsistencyChart";
+import { CompletedChart } from "@/components/dashboard/CompletedChart";
 import { SimpleHabitCard, QuantityCard } from "@/components/dashboard/habit-card";
 import { Button } from "@/components/ui/button";
 
@@ -116,7 +116,7 @@ export default function DashboardPage() {
 
         {/* Consistency chart */}
         <div className="mb-6">
-          <ConsistencyChart habits={habits} />
+          <CompletedChart habits={habits} />
         </div>
 
         {/* Today's habits */}
