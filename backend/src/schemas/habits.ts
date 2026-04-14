@@ -19,3 +19,26 @@ export const createCompletionSchema = z.object({
   quantityProgress: z.number().int().min(0).optional(),
   notes: z.string().optional(),
 });
+
+// Response schemas
+
+export const habitCompletionResponseSchema = z.object({
+  id: z.string(),
+  habitId: z.string(),
+  completedAt: z.date(),
+  quantityProgress: z.number().int().nullable(),
+  notes: z.string().nullable(),
+  createdAt: z.date(),
+});
+
+export const habitResponseSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  name: z.string(),
+  description: z.string().nullable(),
+  frequency: z.enum(["DAILY", "WEEKLY"]),
+  quantity: z.number().int(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  completions: z.array(habitCompletionResponseSchema).optional(),
+});
