@@ -7,6 +7,7 @@ import Link from "next/link";
 import EmojiPicker, { type EmojiClickData, Theme, Categories } from "emoji-picker-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { api } from "@/lib/api";
 
 export default function NewHabitPage() {
   const router = useRouter();
@@ -14,6 +15,8 @@ export default function NewHabitPage() {
   const [emoji, setEmoji] = useState("🏃");
   const [quantity, setQuantity] = useState("");
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,11 +34,21 @@ export default function NewHabitPage() {
     setPickerOpen(false);
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    alert(
-      `Habit Created!\n\nEmoji: ${emoji}\nName: ${name}${quantity ? `\nQuantity: ${quantity}` : ""}`
-    );
+    setError(null);
+    setSubmitting(true);
+    try {
+      const qty = quantity ? parseInt(quantity, 10) : undefined;
+      await api.habits.create({
+        name: `${emoji} ${name}`.trim(),
+        ...(qty && qty > 0 ? { quantity: qty } : {}),
+      });
+      router.push("/dashboard");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -136,18 +149,23 @@ export default function NewHabitPage() {
           {/* Divider */}
           <div className="border-t border-border" />
 
+          {error && (
+            <p className="text-sm text-destructive">{error}</p>
+          )}
+
           {/* Actions */}
           <div className="flex gap-3">
             <Button
               type="button"
               variant="outline"
               className="flex-1"
+              disabled={submitting}
               onClick={() => router.push("/dashboard")}
             >
               Cancel
             </Button>
-            <Button type="submit" className="flex-1">
-              Create habit
+            <Button type="submit" className="flex-1" disabled={submitting}>
+              {submitting ? "Creating…" : "Create habit"}
             </Button>
           </div>
         </form>

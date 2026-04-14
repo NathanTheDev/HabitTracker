@@ -91,7 +91,7 @@ function buildChartData(habits: Habit[], range: Range) {
       }).length;
     }
     const pct = Math.min(100, Math.round((count / totalHabits) * 100));
-    return { label, consistency: pct };
+    return { label, completed: pct };
   });
 }
 
@@ -109,7 +109,7 @@ export function ConsistencyChart({ habits }: Props) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-4">
-        <CardTitle>Consistency</CardTitle>
+        <CardTitle>Completed</CardTitle>
         <div className="flex gap-1">
           {RANGES.map(({ key, label }) => (
             <Button
@@ -155,11 +155,11 @@ export function ConsistencyChart({ habits }: Props) {
                 fontSize: 12,
                 color: "#3D2B29",
               }}
-              formatter={(value: number) => [`${value}%`, "Consistency"]}
+              formatter={(value) => [`${value ?? 0}%`, "Completed"]}
             />
             <Area
               type="monotone"
-              dataKey="consistency"
+              dataKey="completed"
               stroke="#C58D85"
               strokeWidth={2}
               fill="url(#consistencyGrad)"

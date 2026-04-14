@@ -15,6 +15,7 @@ model Habit {
   name        String
   description String?
   frequency   String            @default("DAILY") // "DAILY" | "WEEKLY"
+  quantity    Int               @default(1) // target count per day; 1 = simple boolean habit
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
   completions HabitCompletion[]
@@ -23,12 +24,13 @@ model Habit {
 }
 
 model HabitCompletion {
-  id          String   @id @default(cuid())
-  habitId     String
-  habit       Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
-  completedAt DateTime
-  notes       String?
-  createdAt   DateTime @default(now())
+  id               String   @id @default(cuid())
+  habitId          String
+  habit            Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  completedAt      DateTime
+  quantityProgress Int?     // tracks partial progress for quantity habits
+  notes            String?
+  createdAt        DateTime @default(now())
 
   @@unique([habitId, completedAt]) // one completion per habit per day
   @@index([habitId])

@@ -1,17 +1,35 @@
-// Phase 3: implement these stubs using Prisma
+import prisma from "../prisma";
 
-export async function getAll(_userId: string) {
-  throw new Error("not implemented");
+export async function getAll(userId: string) {
+  return prisma.habit.findMany({
+    where: { userId },
+    orderBy: { createdAt: "asc" },
+    include: { completions: { orderBy: { completedAt: "desc" } } },
+  });
 }
 
-export async function create(_userId: string, _data: unknown) {
-  throw new Error("not implemented");
+export async function create(
+  userId: string,
+  data: { name: string; description?: string; frequency?: string; quantity?: number }
+) {
+  return prisma.habit.create({
+    data: { userId, ...data },
+  });
 }
 
-export async function update(_userId: string, _id: string, _data: unknown) {
-  throw new Error("not implemented");
+export async function update(
+  userId: string,
+  id: string,
+  data: { name?: string; description?: string; frequency?: string; quantity?: number }
+) {
+  const existing = await prisma.habit.findFirst({ where: { id, userId } });
+  if (!existing) return null;
+  return prisma.habit.update({ where: { id }, data });
 }
 
-export async function remove(_userId: string, _id: string) {
-  throw new Error("not implemented");
+export async function remove(userId: string, id: string) {
+  const existing = await prisma.habit.findFirst({ where: { id, userId } });
+  if (!existing) return null;
+  await prisma.habit.delete({ where: { id } });
+  return true;
 }

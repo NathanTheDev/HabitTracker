@@ -12,12 +12,12 @@ interface Props {
 }
 
 export function QuantityCard({ habit, progress, onSetProgress }: Props) {
-  const target = habit.quantity!;
-  const done = progress >= target;
+  const target = habit.quantity;
   const cardRef = useRef<HTMLDivElement>(null);
   const dragState = useRef<{ startX: number; startProgress: number } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [liveProgress, setLiveProgress] = useState(progress);
+  const done = liveProgress >= target;
   const [editingCount, setEditingCount] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -79,9 +79,7 @@ export function QuantityCard({ habit, progress, onSetProgress }: Props) {
     ? `linear-gradient(to right, color-mix(in srgb, var(--color-primary) 10%, transparent) ${pct}%, var(--color-card) ${pct}%)`
     : `linear-gradient(var(--color-card), var(--color-card))`;
 
-  const borderGradient = done
-    ? `linear-gradient(var(--color-card), var(--color-card)) padding-box, var(--color-primary) border-box`
-    : `${innerBg} padding-box, linear-gradient(to right, var(--color-primary) ${pct}%, var(--color-border) ${pct}%) border-box`;
+  const progressBorderGradient = `${innerBg} padding-box, linear-gradient(to right, var(--color-primary) ${pct}%, var(--color-border) ${pct}%) border-box`;
 
   return (
     <HabitCard
@@ -93,10 +91,15 @@ export function QuantityCard({ habit, progress, onSetProgress }: Props) {
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
-      className={cn("select-none", isDragging ? "cursor-grabbing" : "cursor-grab")}
-      style={{
+      className={cn(
+        "select-none",
+        done
+          ? "border border-primary/30 bg-primary/10 cursor-pointer"
+          : cn("cursor-grab", isDragging && "cursor-grabbing")
+      )}
+      style={done ? undefined : {
         border: "2px solid transparent",
-        background: borderGradient,
+        background: progressBorderGradient,
         transition: isDragging ? "none" : "background 300ms ease",
       }}
     >

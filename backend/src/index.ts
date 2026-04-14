@@ -1,6 +1,9 @@
 import app from "./app";
 import { config } from "./config";
 
-app.listen(config.PORT, () => {
+const server = app.listen(config.PORT, () => {
   console.log(`HabitTracker backend running on port ${config.PORT}`);
 });
+
+// Allow tsx watch to cleanly restart — release the port on SIGTERM
+process.on("SIGTERM", () => server.close());

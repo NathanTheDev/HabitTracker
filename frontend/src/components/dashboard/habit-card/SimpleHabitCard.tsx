@@ -25,7 +25,7 @@ export function SimpleHabitCard({ habit, progress, onSetProgress }: Props) {
       className={cn(
         "border text-left transition-all",
         done
-          ? "border-primary/30 bg-primary/10 cursor-default"
+          ? "border-primary/30 bg-primary/10 cursor-pointer"
           : "border-border bg-card hover:border-primary/50 hover:shadow-sm cursor-pointer"
       )}
     />
