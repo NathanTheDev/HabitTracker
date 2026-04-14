@@ -49,25 +49,57 @@ export default function DashboardPage() {
 
   async function handleSetProgress(id: string, value: number) {
     const habit = habits.find((h) => h.id === id);
+    const today = new Date().toISOString().slice(0, 10);
 
     setProgress((prev) => ({ ...prev, [id]: value }));
 
     if (habit && habit.quantity > 1) {
-      // quantity habit — always persist so progress survives refresh
       try {
-        await api.habits.complete(id, { quantityProgress: value });
+        const completion = await api.habits.complete(id, { quantityProgress: value });
+        setHabits((prev) =>
+          prev.map((h) => {
+            if (h.id !== id) return h;
+            const existing = (h.completions ?? []).find((c) => c.completedAt.slice(0, 10) === today);
+            const completions = existing
+              ? (h.completions ?? []).map((c) =>
+                  c.completedAt.slice(0, 10) === today ? { ...c, quantityProgress: value } : c
+                )
+              : [...(h.completions ?? []), completion];
+            return { ...h, completions };
+          })
+        );
       } catch {
         setProgress((prev) => ({ ...prev, [id]: Math.max(0, value - 1) }));
       }
       return;
     }
 
-    // simple habit — only persist when done
-    if (value < 1) return;
+    // simple habit
+    if (value < 1) {
+      try {
+        await api.habits.uncomplete(id, today);
+        setHabits((prev) =>
+          prev.map((h) =>
+            h.id !== id
+              ? h
+              : { ...h, completions: (h.completions ?? []).filter((c) => c.completedAt.slice(0, 10) !== today) }
+          )
+        );
+      } catch {
+        setProgress((prev) => ({ ...prev, [id]: 1 }));
+      }
+      return;
+    }
 
-    // simple habit — persist completion when done
     try {
-      await api.habits.complete(id);
+      const completion = await api.habits.complete(id);
+      setHabits((prev) =>
+        prev.map((h) => {
+          if (h.id !== id) return h;
+          const withoutToday = (h.completions ?? []).filter((c) => c.completedAt.slice(0, 10) !== today);
+          return { ...h, completions: [...withoutToday, completion] };
+        })
+      );
     } catch {
       setProgress((prev) => ({ ...prev, [id]: Math.max(0, value - 1) }));
     }

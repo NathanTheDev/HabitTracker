@@ -15,5 +15,6 @@ router.delete("/:id", verifySession(), habitsController.deleteHabit);
 
 router.get("/:id/completions", verifySession(), completionsController.getCompletions);
 router.post("/:id/completions", verifySession(), validateBody(createCompletionSchema), completionsController.createCompletion);
+router.delete("/:id/completions", verifySession(), completionsController.deleteCompletion);
 
 export default router;

@@ -29,3 +29,15 @@ export async function createCompletion(req: SessionRequest, res: Response, next:
     next(err);
   }
 }
+
+export async function deleteCompletion(req: SessionRequest, res: Response, next: NextFunction) {
+  try {
+    const userId = req.session!.getUserId();
+    const date = req.query.date ? new Date(req.query.date as string) : new Date();
+    const result = await completionService.deleteForDate(userId, req.params.id, date);
+    if (result === null) return void res.sendStatus(404);
+    res.sendStatus(204);
+  } catch (err) {
+    next(err);
+  }
+}

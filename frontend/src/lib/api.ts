@@ -54,6 +54,11 @@ export const api = {
         body: JSON.stringify(data ?? {}),
       }),
 
+    uncomplete: (id: string, date?: string) =>
+      request<void>(`/api/habits/${id}/completions${date ? `?date=${date}` : ""}`, {
+        method: "DELETE",
+      }),
+
     completions: (id: string) =>
       request<HabitCompletion[]>(`/api/habits/${id}/completions`),
   },

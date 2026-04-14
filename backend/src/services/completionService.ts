@@ -25,3 +25,11 @@ export async function create(
     update: { quantityProgress: data.quantityProgress, notes: data.notes },
   });
 }
+
+export async function deleteForDate(userId: string, habitId: string, date: Date) {
+  const habit = await prisma.habit.findFirst({ where: { id: habitId, userId } });
+  if (!habit) return null;
+  const completedAt = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  await prisma.habitCompletion.deleteMany({ where: { habitId, completedAt } });
+  return true;
+}
