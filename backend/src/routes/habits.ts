@@ -1,33 +1,13 @@
 import { Router } from "express";
 import { verifySession } from "supertokens-node/recipe/session/framework/express";
 import { SessionRequest } from "supertokens-node/framework/express";
-import { z } from "zod";
 
 import { validateBody } from "../middleware/validate";
+import { createHabitSchema, updateHabitSchema, createCompletionSchema } from "../schemas/habits";
 import * as habitService from "../services/habitService";
 import * as completionService from "../services/completionService";
 
 const router = Router();
-
-const createHabitSchema = z.object({
-  name: z.string().min(1),
-  description: z.string().optional(),
-  frequency: z.enum(["DAILY", "WEEKLY"]).optional(),
-  quantity: z.number().int().positive().optional(),
-});
-
-const updateHabitSchema = z.object({
-  name: z.string().min(1).optional(),
-  description: z.string().optional(),
-  frequency: z.enum(["DAILY", "WEEKLY"]).optional(),
-  quantity: z.number().int().positive().optional(),
-});
-
-const createCompletionSchema = z.object({
-  completedAt: z.string().datetime().optional(),
-  quantityProgress: z.number().int().min(0).optional(),
-  notes: z.string().optional(),
-});
 
 router.get("/", verifySession(), async (req, res, next) => {
   try {
