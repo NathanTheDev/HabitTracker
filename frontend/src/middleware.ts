@@ -1,7 +1,11 @@
-// STUB: auth middleware not implemented in this phase
 import { NextRequest, NextResponse } from "next/server";
 
-export function middleware(_req: NextRequest) {
+export function middleware(req: NextRequest) {
+  // sAccessToken is the cookie SuperTokens Node SDK sets for the access token
+  const hasSession = req.cookies.has("sAccessToken");
+  if (!hasSession) {
+    return NextResponse.redirect(new URL("/auth", req.url));
+  }
   return NextResponse.next();
 }
 

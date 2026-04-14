@@ -1,4 +1,5 @@
 import "./globals.css";
+import SuperTokensProvider from "@/components/SuperTokensProvider";
 
 export default function RootLayout({
   children,
@@ -8,7 +9,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-background text-foreground font-sans antialiased">
-        {children}
+        <SuperTokensProvider>{children}</SuperTokensProvider>
       </body>
     </html>
   );

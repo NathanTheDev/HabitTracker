@@ -1,5 +1,5 @@
 import SuperTokens from "supertokens-node";
-import EmailPassword from "supertokens-node/recipe/emailpassword";
+import Passwordless from "supertokens-node/recipe/passwordless";
 import Session from "supertokens-node/recipe/session";
 import { config } from "./config";
 
@@ -13,8 +13,14 @@ SuperTokens.init({
     appName: "HabitTracker",
     apiDomain: `http://localhost:${config.PORT}`,
     websiteDomain: config.FRONTEND_ORIGIN,
-    apiBasePath: "/auth",
+    apiBasePath: "/api/auth",
     websiteBasePath: "/auth",
   },
-  recipeList: [EmailPassword.init(), Session.init()],
+  recipeList: [
+    Passwordless.init({
+      flowType: "USER_INPUT_CODE",
+      contactMethod: "EMAIL",
+    }),
+    Session.init(),
+  ],
 });

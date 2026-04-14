@@ -1,17 +1,23 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useSessionContext, signOut } from "supertokens-auth-react/recipe/session";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Pencil } from "lucide-react";
+import { ArrowLeft, Pencil, LogOut } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 export default function ProfilePage() {
+  const session = useSessionContext();
+  const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [displayName, setDisplayName] = useState("");
   const [draft, setDraft] = useState("");
+
+  const userId = !session.loading && session.doesSessionExist ? session.userId : null;
 
   function handleEdit() {
     setDraft(displayName);
@@ -25,6 +31,11 @@ export default function ProfilePage() {
 
   function handleCancel() {
     setEditing(false);
+  }
+
+  async function handleLogout() {
+    await signOut();
+    router.push("/auth");
   }
 
   const initials = displayName
@@ -84,9 +95,9 @@ export default function ProfilePage() {
           </div>
           <div>
             <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide font-medium">
-              Email
+              User ID
             </p>
-            <p className="text-sm text-foreground">—</p>
+            <p className="text-sm text-foreground font-mono">{userId ?? "—"}</p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide font-medium">
@@ -107,6 +118,14 @@ export default function ProfilePage() {
           )}
         </CardContent>
       </Card>
+
+      <Button
+        className="w-full mt-4"
+        onClick={handleLogout}
+      >
+        <LogOut className="h-4 w-4 mr-2" />
+        Log out
+      </Button>
     </main>
   );
 }

@@ -30,7 +30,7 @@ app.use(
 app.use(globalLimiter);
 
 // Stricter rate limit on auth routes
-app.use("/auth", authLimiter);
+app.use("/api/auth", authLimiter);
 
 // Body parser — 10kb limit prevents payload flooding
 app.use(express.json({ limit: "10kb" }));
