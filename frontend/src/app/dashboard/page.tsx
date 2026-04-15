@@ -20,7 +20,6 @@ export default function DashboardPage() {
     try {
       const data = await api.habits.list();
       setHabits(data);
-      // seed progress from today's completions
       const initial: Record<string, number> = {};
       const today = new Date().toISOString().slice(0, 10);
       for (const h of data) {
@@ -28,12 +27,7 @@ export default function DashboardPage() {
           (c) => c.completedAt.slice(0, 10) === today
         );
         if (!todayCompletion) continue;
-        if (h.quantity > 1) {
-          // use persisted partial progress, fall back to full quantity if not set
-          initial[h.id] = todayCompletion.quantityProgress ?? h.quantity;
-        } else {
-          initial[h.id] = 1;
-        }
+        initial[h.id] = h.quantity > 1 ? (todayCompletion.quantityProgress ?? h.quantity) : 1;
       }
       setProgress(initial);
     } catch (err) {
@@ -74,7 +68,6 @@ export default function DashboardPage() {
       return;
     }
 
-    // simple habit
     if (value < 1) {
       try {
         await api.habits.uncomplete(id, today);
@@ -129,7 +122,6 @@ export default function DashboardPage() {
       <div className="max-w-2xl mx-auto px-4 py-8">
         <DashboardHeader />
 
-        {/* Progress summary */}
         <div className="mb-6 rounded-[16px] bg-primary/10 border border-primary/20 px-5 py-4 flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-foreground">
@@ -146,12 +138,10 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Consistency chart */}
         <div className="mb-6">
           <CompletedChart habits={habits} />
         </div>
 
-        {/* Today's habits */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-base font-semibold text-foreground">Today</h2>
           <Link href="/habits/new">

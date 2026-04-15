@@ -33,7 +33,16 @@ export async function createCompletion(req: SessionRequest, res: Response, next:
 export async function deleteCompletion(req: SessionRequest, res: Response, next: NextFunction) {
   try {
     const userId = req.session!.getUserId();
-    const date = req.query.date ? new Date(req.query.date as string) : new Date();
+    let date: Date;
+    if (req.query.date) {
+      const parsed = new Date(req.query.date as string);
+      if (isNaN(parsed.getTime())) {
+        return void res.status(400).json({ error: "Invalid date query parameter" });
+      }
+      date = parsed;
+    } else {
+      date = new Date();
+    }
     const result = await completionService.deleteForDate(userId, req.params.id, date);
     if (result === null) return void res.sendStatus(404);
     res.sendStatus(204);

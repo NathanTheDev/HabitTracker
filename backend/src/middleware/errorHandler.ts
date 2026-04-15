@@ -1,5 +1,11 @@
+import { Prisma } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { config } from "../config";
+
+const PRISMA_ERROR_MAP: Record<string, { status: number; message: string }> = {
+  P2002: { status: 409, message: "Resource already exists" },
+  P2025: { status: 404, message: "Not found" },
+};
 
 export function errorHandler(
   err: Error & { statusCode?: number; status?: number },
@@ -7,7 +13,18 @@ export function errorHandler(
   res: Response,
   _next: NextFunction
 ) {
-  const statusCode = err.statusCode ?? err.status ?? 500;
+  if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    const mapped = PRISMA_ERROR_MAP[err.code];
+    if (mapped) {
+      return void res.status(mapped.status).json({ error: mapped.message });
+    }
+    (err as unknown as { statusCode: number }).statusCode = 500;
+  }
+
+  const statusCode = (err as { statusCode?: number; status?: number }).statusCode
+    ?? (err as { status?: number }).status
+    ?? 500;
+
   const message =
     config.NODE_ENV === "production" && statusCode >= 500
       ? "Internal server error"

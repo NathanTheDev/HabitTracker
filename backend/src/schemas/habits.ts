@@ -1,23 +1,24 @@
 import { z } from "zod";
 
 export const createHabitSchema = z.object({
-  name: z.string().min(1),
-  description: z.string().optional(),
+  name: z.string().trim().min(1).max(100),
+  description: z.string().trim().max(500).optional(),
   frequency: z.enum(["DAILY", "WEEKLY"]).optional(),
-  quantity: z.number().int().positive().optional(),
+  quantity: z.number().int().positive().max(1000).optional(),
 });
 
 export const updateHabitSchema = z.object({
-  name: z.string().min(1).optional(),
-  description: z.string().optional(),
+  name: z.string().trim().min(1).max(100).optional(),
+  // null explicitly clears the description
+  description: z.string().trim().max(500).nullable().optional(),
   frequency: z.enum(["DAILY", "WEEKLY"]).optional(),
-  quantity: z.number().int().positive().optional(),
+  quantity: z.number().int().positive().max(1000).optional(),
 });
 
 export const createCompletionSchema = z.object({
   completedAt: z.string().datetime().optional(),
-  quantityProgress: z.number().int().min(0).optional(),
-  notes: z.string().optional(),
+  quantityProgress: z.number().int().min(0).max(1000).optional(),
+  notes: z.string().trim().max(1000).optional(),
 });
 
 // Response schemas
