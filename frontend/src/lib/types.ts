@@ -2,7 +2,6 @@ export type Frequency = "DAILY" | "WEEKLY";
 
 export interface Habit {
   id: string;
-  userId: string;
   name: string;
   description?: string;
   frequency: Frequency;

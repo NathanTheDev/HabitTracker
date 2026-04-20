@@ -34,7 +34,6 @@ export const habitCompletionResponseSchema = z.object({
 
 export const habitResponseSchema = z.object({
   id: z.string(),
-  userId: z.string(),
   name: z.string(),
   description: z.string().nullable(),
   frequency: z.enum(["DAILY", "WEEKLY"]),
