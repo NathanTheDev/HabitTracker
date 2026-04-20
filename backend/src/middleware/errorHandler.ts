@@ -3,7 +3,9 @@ import { NextFunction, Request, Response } from "express";
 import { config } from "../config";
 
 const PRISMA_ERROR_MAP: Record<string, { status: number; message: string }> = {
+  P2000: { status: 400, message: "Input value too long" },
   P2002: { status: 409, message: "Resource already exists" },
+  P2003: { status: 400, message: "Related resource not found" },
   P2025: { status: 404, message: "Not found" },
 };
 

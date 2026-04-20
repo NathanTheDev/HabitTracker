@@ -16,6 +16,10 @@ export async function create(
 ) {
   const habit = await prisma.habit.findFirst({ where: { id: habitId, userId } });
   if (!habit) return null;
+  if (data.quantityProgress !== undefined && data.quantityProgress > habit.quantity) {
+    const err = Object.assign(new Error("quantityProgress exceeds habit quantity"), { statusCode: 400 });
+    throw err;
+  }
   // normalise to midnight UTC so the unique constraint enforces one per day
   const d = data.completedAt;
   const completedAt = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
