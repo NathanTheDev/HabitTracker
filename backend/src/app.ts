@@ -10,6 +10,7 @@ import { config } from "./config";
 import { errorHandler } from "./middleware/errorHandler";
 import { authLimiter, globalLimiter } from "./middleware/rateLimiter";
 import habitsRouter from "./routes/habits";
+import userRouter from "./routes/user";
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use(express.json({ limit: "10kb" }));
 app.use(middleware());
 
 app.use("/api/habits", habitsRouter);
+app.use("/api/user", userRouter);
 
 // must come before custom error handler
 app.use(stErrorHandler());

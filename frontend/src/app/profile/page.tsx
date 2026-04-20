@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useSessionContext, signOut } from "supertokens-auth-react/recipe/session";
@@ -10,14 +10,52 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Pencil, LogOut } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
+function inferDisplayName(email: string): string {
+  const local = email.split("@")[0];
+  return local
+    .split(/[._\-+]/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
+function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
+
 export default function ProfilePage() {
   const session = useSessionContext();
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [displayName, setDisplayName] = useState("");
   const [draft, setDraft] = useState("");
+  const [memberSince, setMemberSince] = useState<string | null>(null);
 
   const userId = !session.loading && session.doesSessionExist ? session.userId : null;
+
+  useEffect(() => {
+    if (session.loading || !session.doesSessionExist) return;
+    fetch("/api/user/me", { credentials: "include" })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.email && !displayName) {
+          setDisplayName(inferDisplayName(data.email));
+        }
+        if (data.timeJoined) {
+          setMemberSince(
+            new Date(data.timeJoined).toLocaleDateString("en-US", {
+              month: "long",
+              year: "numeric",
+            })
+          );
+        }
+      })
+      .catch(() => {});
+  }, [session.loading, session.doesSessionExist]);
 
   function handleEdit() {
     setDraft(displayName);
@@ -38,14 +76,7 @@ export default function ProfilePage() {
     router.push("/auth");
   }
 
-  const initials = displayName
-    ? displayName
-        .split(" ")
-        .map((w) => w[0])
-        .join("")
-        .slice(0, 2)
-        .toUpperCase()
-    : "U";
+  const initials = displayName ? getInitials(displayName) : "?";
 
   return (
     <main className="min-h-screen bg-background px-4 py-8 max-w-lg mx-auto">
@@ -103,7 +134,7 @@ export default function ProfilePage() {
             <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide font-medium">
               Member since
             </p>
-            <p className="text-sm text-foreground">—</p>
+            <p className="text-sm text-foreground">{memberSince ?? "—"}</p>
           </div>
 
           {editing && (
