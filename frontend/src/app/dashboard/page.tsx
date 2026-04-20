@@ -63,7 +63,8 @@ export default function DashboardPage() {
           })
         );
       } catch {
-        setProgress((prev) => ({ ...prev, [id]: Math.max(0, value - 1) }));
+        setError("Couldn't save — try again");
+        await loadHabits();
       }
       return;
     }
@@ -79,7 +80,8 @@ export default function DashboardPage() {
           )
         );
       } catch {
-        setProgress((prev) => ({ ...prev, [id]: 1 }));
+        setError("Couldn't save — try again");
+        await loadHabits();
       }
       return;
     }
@@ -94,7 +96,8 @@ export default function DashboardPage() {
         })
       );
     } catch {
-      setProgress((prev) => ({ ...prev, [id]: Math.max(0, value - 1) }));
+      setError("Couldn't save — try again");
+      await loadHabits();
     }
   }
 

@@ -22,14 +22,14 @@ export async function update(
   id: string,
   data: { name?: string; description?: string; frequency?: string; quantity?: number }
 ) {
-  const existing = await prisma.habit.findFirst({ where: { id, userId } });
-  if (!existing) return null;
-  return prisma.habit.update({ where: { id }, data });
+  return prisma.$transaction(async (tx) => {
+    const existing = await tx.habit.findFirst({ where: { id, userId } });
+    if (!existing) return null;
+    return tx.habit.update({ where: { id }, data });
+  });
 }
 
 export async function remove(userId: string, id: string) {
-  const existing = await prisma.habit.findFirst({ where: { id, userId } });
-  if (!existing) return null;
-  await prisma.habit.delete({ where: { id } });
-  return true;
+  const result = await prisma.habit.deleteMany({ where: { id, userId } });
+  return result.count > 0 ? true : null;
 }

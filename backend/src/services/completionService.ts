@@ -27,9 +27,11 @@ export async function create(
 }
 
 export async function deleteForDate(userId: string, habitId: string, date: Date) {
-  const habit = await prisma.habit.findFirst({ where: { id: habitId, userId } });
-  if (!habit) return null;
   const completedAt = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
-  await prisma.habitCompletion.deleteMany({ where: { habitId, completedAt } });
-  return true;
+  return prisma.$transaction(async (tx) => {
+    const habit = await tx.habit.findFirst({ where: { id: habitId, userId } });
+    if (!habit) return null;
+    await tx.habitCompletion.deleteMany({ where: { habitId, completedAt } });
+    return true;
+  });
 }
