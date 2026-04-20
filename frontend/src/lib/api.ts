@@ -55,7 +55,7 @@ export const api = {
       }),
 
     uncomplete: (id: string, date?: string) =>
-      request<void>(`/api/habits/${id}/completions${date ? `?date=${date}` : ""}`, {
+      request<void>(`/api/habits/${id}/completions${date ? `?${new URLSearchParams({ date })}` : ""}`, {
         method: "DELETE",
       }),
 
