@@ -13,6 +13,9 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// Frequency is enforced as an enum at the Zod schema layer (habits.ts).
+// A Prisma enum here requires PostgreSQL — switch provider before adding it.
+
 model Habit {
   id          String            @id @default(cuid())
   userId      String            // SuperTokens user ID — no FK, ST owns user data
