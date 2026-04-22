@@ -20,6 +20,14 @@ SuperTokens.init({
     Passwordless.init({
       flowType: "USER_INPUT_CODE",
       contactMethod: "EMAIL",
+      emailDelivery: {
+        override: (original) => ({
+          ...original,
+          sendEmail: async (input) => {
+            console.log(`[OTP] ${input.email} → ${input.userInputCode}`);
+          },
+        }),
+      },
     }),
     Session.init(),
   ],
