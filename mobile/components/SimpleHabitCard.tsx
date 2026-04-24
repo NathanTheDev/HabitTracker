@@ -1,18 +1,37 @@
+import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Card from './ui/Card';
 import { colors, fontSizes, fontWeights, spacing } from '../theme';
+import { api } from '../lib/api';
 import type { Habit } from '../lib/types';
 
 type Props = {
   habit: Habit;
   completed: boolean;
-  onToggle?: () => void;
+  onUpdate?: () => void;
 };
 
-export default function SimpleHabitCard({ habit, completed, onToggle }: Props) {
+export default function SimpleHabitCard({ habit, completed, onUpdate }: Props) {
+  const [localCompleted, setLocalCompleted] = useState(completed);
+
+  const handlePress = async () => {
+    const next = !localCompleted;
+    setLocalCompleted(next);
+    try {
+      if (next) {
+        await api.habits.complete(habit.id);
+      } else {
+        await api.habits.uncomplete(habit.id);
+      }
+      onUpdate?.();
+    } catch {
+      setLocalCompleted(!next);
+    }
+  };
+
   return (
-    <Pressable onPress={onToggle} style={({ pressed }) => pressed && { opacity: 0.85 }}>
-      <Card style={[styles.card, completed && styles.cardCompleted]}>
+    <Pressable onPress={handlePress} style={({ pressed }) => pressed && { opacity: 0.85 }}>
+      <Card style={[styles.card, localCompleted && styles.cardCompleted]}>
         <View style={styles.row}>
           {habit.emoji ? (
             <Text style={styles.emoji}>{habit.emoji}</Text>
@@ -20,15 +39,15 @@ export default function SimpleHabitCard({ habit, completed, onToggle }: Props) {
             <View style={styles.emojiPlaceholder} />
           )}
           <View style={styles.info}>
-            <Text style={[styles.name, completed && styles.nameCompleted]} numberOfLines={1}>
+            <Text style={[styles.name, localCompleted && styles.nameCompleted]} numberOfLines={1}>
               {habit.name}
             </Text>
             {habit.description ? (
               <Text style={styles.description} numberOfLines={1}>{habit.description}</Text>
             ) : null}
           </View>
-          <View style={[styles.check, completed && styles.checkCompleted]}>
-            {completed ? <Text style={styles.checkmark}>✓</Text> : null}
+          <View style={[styles.check, localCompleted && styles.checkCompleted]}>
+            {localCompleted ? <Text style={styles.checkmark}>✓</Text> : null}
           </View>
         </View>
       </Card>

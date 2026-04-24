@@ -71,6 +71,7 @@ export default function Dashboard() {
           habit={item}
           progress={todayProgress(item)}
           completed={isCompletedToday(item)}
+          onUpdate={load}
         />
       );
     }
@@ -78,6 +79,7 @@ export default function Dashboard() {
       <SimpleHabitCard
         habit={item}
         completed={isCompletedToday(item)}
+        onUpdate={load}
       />
     );
   };

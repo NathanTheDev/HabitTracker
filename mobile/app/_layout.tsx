@@ -1,6 +1,8 @@
 import '../global.css';
 import { useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { storage } from '../lib/storage';
 
 export default function RootLayout() {
@@ -22,5 +24,13 @@ export default function RootLayout() {
 
   if (!ready) return null;
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <GestureHandlerRootView style={styles.root}>
+      <Stack screenOptions={{ headerShown: false }} />
+    </GestureHandlerRootView>
+  );
 }
+
+const styles = StyleSheet.create({
+  root: { flex: 1 },
+});
