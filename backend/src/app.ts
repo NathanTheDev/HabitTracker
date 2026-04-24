@@ -21,7 +21,7 @@ app.use(
     origin: config.FRONTEND_ORIGIN,
     credentials: true,
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", ...require("supertokens-node").getAllCORSHeaders()],
+    allowedHeaders: ["Content-Type", "Authorization", "st-auth-mode", ...require("supertokens-node").getAllCORSHeaders()],
   })
 );
 
