@@ -6,6 +6,7 @@ import type {
   Habit,
   HabitCompletion,
   UpdateHabitInput,
+  User,
 } from './types';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -83,5 +84,9 @@ export const api = {
       ),
 
     completions: (id: string) => request<HabitCompletion[]>(`/api/habits/${id}/completions`),
+  },
+
+  user: {
+    me: () => request<User>('/api/user/me'),
   },
 };

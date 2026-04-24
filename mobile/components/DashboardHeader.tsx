@@ -1,0 +1,51 @@
+import { StyleSheet, Text, View } from 'react-native';
+import Avatar from './ui/Avatar';
+import { colors, fontSizes, fontWeights, spacing } from '../theme';
+
+function greeting(): string {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 17) return 'Good afternoon';
+  return 'Good evening';
+}
+
+type Props = {
+  email?: string;
+};
+
+export default function DashboardHeader({ email }: Props) {
+  const localPart = email?.split('@')[0] ?? '';
+  const displayName = localPart.charAt(0).toUpperCase() + localPart.slice(1);
+
+  return (
+    <View style={styles.container}>
+      <View>
+        <Text style={styles.greeting}>{greeting()}</Text>
+        {displayName ? <Text style={styles.name}>{displayName}</Text> : null}
+      </View>
+      {email ? <Avatar name={displayName || email} size={44} /> : null}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.lg,
+  },
+  greeting: {
+    fontSize: fontSizes.sm,
+    fontWeight: fontWeights.medium,
+    color: colors.textMuted,
+  },
+  name: {
+    fontSize: fontSizes.xl,
+    fontWeight: fontWeights.bold,
+    color: colors.textPrimary,
+    marginTop: 2,
+  },
+});

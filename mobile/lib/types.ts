@@ -34,3 +34,8 @@ export type CreateCompletionInput = {
   quantityProgress?: number;
   notes?: string;
 };
+
+export interface User {
+  email: string;
+  timeJoined: number;
+}
