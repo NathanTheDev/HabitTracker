@@ -15,6 +15,7 @@ import { colors, fontSizes, fontWeights, radii, spacing } from '../../theme';
 import DashboardHeader from '../../components/DashboardHeader';
 import SimpleHabitCard from '../../components/SimpleHabitCard';
 import QuantityCard from '../../components/QuantityCard';
+import CompletedChart from '../../components/CompletedChart';
 
 type Tab = 'pending' | 'completed';
 
@@ -107,6 +108,7 @@ export default function Dashboard() {
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={styles.list}
+        ListHeaderComponent={<CompletedChart habits={habits} />}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
