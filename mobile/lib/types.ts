@@ -26,6 +26,7 @@ export type CreateHabitInput = {
   description?: string;
   frequency?: Frequency;
   quantity?: number;
+  emoji?: string;
 };
 
 export type UpdateHabitInput = Partial<CreateHabitInput>;

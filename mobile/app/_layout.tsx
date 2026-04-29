@@ -26,7 +26,9 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={styles.root}>
-      <Stack screenOptions={{ headerShown: false }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="habits/new" options={{ presentation: 'modal' }} />
+      </Stack>
     </GestureHandlerRootView>
   );
 }
