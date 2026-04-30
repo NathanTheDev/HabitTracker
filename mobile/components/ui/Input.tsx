@@ -25,24 +25,23 @@ export default function Input({ label, style, ...rest }: Props) {
 
 const styles = StyleSheet.create({
   label: {
-    fontSize: fontSizes.xs,
-    fontWeight: '600',
-    color: colors.textSecondary,
-    letterSpacing: 0.5,
+    fontSize: fontSizes.sm,
+    fontWeight: '500',
+    color: colors.textPrimary,
     marginBottom: spacing.xs,
-    textTransform: 'uppercase',
   },
   input: {
-    height: 48,
-    borderRadius: radii.lg,
-    borderWidth: 1.5,
+    height: 44,
+    borderRadius: radii.md,
+    borderWidth: 1,
     borderColor: colors.border,
     paddingHorizontal: 14,
     fontSize: fontSizes.md,
     color: colors.textPrimary,
-    backgroundColor: colors.white,
+    backgroundColor: colors.background,
   },
   inputFocused: {
-    borderColor: colors.primaryLight,
+    borderColor: colors.primary,
+    borderWidth: 1.5,
   },
 });

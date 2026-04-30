@@ -65,12 +65,12 @@ export default function OtpInput({ onComplete, disabled }: Props) {
             height: 56,
             borderRadius: 12,
             borderWidth: 1.5,
-            borderColor: val ? '#C58D85' : '#E8E0DC',
+            borderColor: val ? '#C58D85' : '#EDE5E3',
             backgroundColor: '#FFFFFF',
             textAlign: 'center',
             fontSize: 22,
             fontWeight: '600',
-            color: '#3D3530',
+            color: '#3D2B29',
           }}
         />
       ))}

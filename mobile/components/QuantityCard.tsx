@@ -7,7 +7,6 @@ import {
   View,
 } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
-import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fontSizes, fontWeights, radii, spacing } from '../theme';
 import { api } from '../lib/api';
 import type { Habit } from '../lib/types';
@@ -84,19 +83,18 @@ export default function QuantityCard({ habit, progress, completed, onUpdate }: P
     }
   };
 
-  const hasProgress = localProgress > 0;
   const localCompleted = localProgress >= habit.quantity;
 
-  const inner = (
-    <View style={[styles.card, localCompleted && styles.cardCompleted]}>
+  return (
+    <View style={[styles.card, localCompleted && styles.cardDone]}>
       <View style={styles.header}>
         <View style={styles.titleRow}>
           {habit.emoji ? (
             <Text style={styles.emoji}>{habit.emoji}</Text>
-          ) : (
-            <View style={styles.emojiPlaceholder} />
-          )}
-          <Text style={styles.name} numberOfLines={1}>{habit.name}</Text>
+          ) : null}
+          <Text style={[styles.name, localCompleted && styles.nameDone]} numberOfLines={1}>
+            {habit.name}
+          </Text>
         </View>
 
         {editing ? (
@@ -111,13 +109,14 @@ export default function QuantityCard({ habit, progress, completed, onUpdate }: P
             selectTextOnFocus
           />
         ) : (
-          <Text style={styles.counter} onPress={() => {
-            setEditText(String(localProgress));
-            setEditing(true);
-          }}>
-            <Text style={styles.counterValue}>{localProgress}</Text>
-            <Text style={styles.counterSep}> / </Text>
-            <Text style={styles.counterTarget}>{habit.quantity}</Text>
+          <Text
+            style={styles.counter}
+            onPress={() => {
+              setEditText(String(localProgress));
+              setEditing(true);
+            }}
+          >
+            {localProgress}/{habit.quantity}
           </Text>
         )}
       </View>
@@ -137,45 +136,26 @@ export default function QuantityCard({ habit, progress, completed, onUpdate }: P
       </View>
     </View>
   );
-
-  if (hasProgress) {
-    return (
-      <LinearGradient
-        colors={[colors.primary, colors.primaryLight]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={[styles.gradientBorder, styles.cardOuter]}
-      >
-        {inner}
-      </LinearGradient>
-    );
-  }
-
-  return <View style={styles.cardOuter}>{inner}</View>;
 }
 
 const styles = StyleSheet.create({
-  cardOuter: {
-    marginHorizontal: spacing.lg,
-    marginBottom: spacing.sm,
-    borderRadius: radii.lg + 2,
-  },
-  gradientBorder: {
-    padding: 2,
-  },
   card: {
     backgroundColor: colors.white,
     borderRadius: radii.lg,
-    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
     gap: spacing.sm,
     shadowColor: colors.textPrimary,
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
-  cardCompleted: {
-    opacity: 0.7,
+  cardDone: {
+    backgroundColor: colors.primarySubtle,
+    borderColor: colors.primaryBorder,
   },
   header: {
     flexDirection: 'row',
@@ -185,41 +165,37 @@ const styles = StyleSheet.create({
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: spacing.xs,
     flex: 1,
   },
   emoji: {
-    fontSize: 24,
-  },
-  emojiPlaceholder: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.border,
+    fontSize: fontSizes.md,
   },
   name: {
-    fontSize: fontSizes.md,
-    fontWeight: fontWeights.semibold,
+    fontSize: fontSizes.sm,
+    fontWeight: fontWeights.medium,
     color: colors.textPrimary,
     flex: 1,
   },
-  counter: {},
-  counterValue: {
-    fontSize: fontSizes.lg,
-    fontWeight: fontWeights.bold,
+  nameDone: {
     color: colors.primary,
+    textDecorationLine: 'line-through',
   },
-  counterSep: {
-    fontSize: fontSizes.sm,
-    color: colors.textMuted,
-  },
-  counterTarget: {
-    fontSize: fontSizes.sm,
-    color: colors.textSecondary,
+  counter: {
+    fontSize: fontSizes.xs,
+    fontWeight: fontWeights.medium,
+    color: colors.textPrimary,
+    backgroundColor: colors.muted,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radii.sm,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    overflow: 'hidden',
   },
   editInput: {
-    fontSize: fontSizes.lg,
-    fontWeight: fontWeights.bold,
+    fontSize: fontSizes.sm,
+    fontWeight: fontWeights.medium,
     color: colors.primary,
     minWidth: 48,
     textAlign: 'right',
@@ -232,7 +208,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   track: {
-    height: 8,
+    height: 6,
     borderRadius: radii.full,
     backgroundColor: colors.border,
     overflow: 'hidden',

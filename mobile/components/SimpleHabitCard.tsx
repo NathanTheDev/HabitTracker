@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import Card from './ui/Card';
-import { colors, fontSizes, fontWeights, spacing } from '../theme';
+import { colors, fontSizes, fontWeights, radii, spacing } from '../theme';
 import { api } from '../lib/api';
 import type { Habit } from '../lib/types';
 
@@ -31,88 +30,68 @@ export default function SimpleHabitCard({ habit, completed, onUpdate }: Props) {
 
   return (
     <Pressable onPress={handlePress} style={({ pressed }) => pressed && { opacity: 0.85 }}>
-      <Card style={[styles.card, localCompleted && styles.cardCompleted]}>
-        <View style={styles.row}>
-          {habit.emoji ? (
-            <Text style={styles.emoji}>{habit.emoji}</Text>
-          ) : (
-            <View style={styles.emojiPlaceholder} />
-          )}
-          <View style={styles.info}>
-            <Text style={[styles.name, localCompleted && styles.nameCompleted]} numberOfLines={1}>
-              {habit.name}
-            </Text>
-            {habit.description ? (
-              <Text style={styles.description} numberOfLines={1}>{habit.description}</Text>
-            ) : null}
-          </View>
-          <View style={[styles.check, localCompleted && styles.checkCompleted]}>
-            {localCompleted ? <Text style={styles.checkmark}>✓</Text> : null}
-          </View>
+      <View style={[styles.card, localCompleted && styles.cardDone]}>
+        <View style={[styles.check, localCompleted && styles.checkDone]}>
+          {localCompleted && <Text style={styles.checkmark}>✓</Text>}
         </View>
-      </Card>
+        <Text style={[styles.name, localCompleted && styles.nameDone]} numberOfLines={1}>
+          {habit.emoji ? <Text>{habit.emoji} </Text> : null}
+          {habit.name}
+        </Text>
+      </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    marginHorizontal: spacing.lg,
-    marginBottom: spacing.sm,
-    padding: spacing.md,
-  },
-  cardCompleted: {
-    opacity: 0.7,
-  },
-  row: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
+    backgroundColor: colors.white,
+    borderRadius: radii.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    shadowColor: colors.textPrimary,
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
-  emoji: {
-    fontSize: 28,
-    width: 40,
-    textAlign: 'center',
-  },
-  emojiPlaceholder: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.border,
-  },
-  info: {
-    flex: 1,
-  },
-  name: {
-    fontSize: fontSizes.md,
-    fontWeight: fontWeights.semibold,
-    color: colors.textPrimary,
-  },
-  nameCompleted: {
-    textDecorationLine: 'line-through',
-    color: colors.textMuted,
-  },
-  description: {
-    fontSize: fontSizes.sm,
-    color: colors.textSecondary,
-    marginTop: 2,
+  cardDone: {
+    backgroundColor: colors.primarySubtle,
+    borderColor: colors.primaryBorder,
   },
   check: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    borderWidth: 2,
+    width: 20,
+    height: 20,
+    borderRadius: radii.full,
+    borderWidth: 1.5,
     borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
   },
-  checkCompleted: {
+  checkDone: {
     backgroundColor: colors.primary,
     borderColor: colors.primary,
   },
   checkmark: {
     color: colors.white,
-    fontSize: 14,
+    fontSize: 11,
     fontWeight: fontWeights.bold,
+    lineHeight: 14,
+  },
+  name: {
+    flex: 1,
+    fontSize: fontSizes.sm,
+    fontWeight: fontWeights.medium,
+    color: colors.textPrimary,
+  },
+  nameDone: {
+    color: colors.primary,
+    textDecorationLine: 'line-through',
   },
 });

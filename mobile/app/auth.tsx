@@ -78,7 +78,6 @@ export default function Auth() {
         {step === 'email' ? (
           <View style={styles.form}>
             <Input
-              label="Email"
               value={email}
               onChangeText={setEmail}
               placeholder="you@example.com"

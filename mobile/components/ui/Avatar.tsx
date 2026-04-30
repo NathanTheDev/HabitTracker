@@ -22,7 +22,7 @@ export default function Avatar({ name, size = 40, style, ...rest }: Props) {
       ]}
       {...rest}
     >
-      <Text style={[styles.initials, { fontSize: size * 0.38 }]}>
+      <Text style={[styles.initials, { fontSize: size * 0.36 }]}>
         {getInitials(name)}
       </Text>
     </View>
@@ -31,7 +31,7 @@ export default function Avatar({ name, size = 40, style, ...rest }: Props) {
 
 const styles = StyleSheet.create({
   circle: {
-    backgroundColor: colors.primaryLight,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -9,6 +9,14 @@ function greeting(): string {
   return 'Good evening';
 }
 
+function todayLabel(): string {
+  return new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
 type Props = {
   email?: string;
 };
@@ -21,9 +29,9 @@ export default function DashboardHeader({ email }: Props) {
     <View style={styles.container}>
       <View>
         <Text style={styles.greeting}>{greeting()}</Text>
-        {displayName ? <Text style={styles.name}>{displayName}</Text> : null}
+        <Text style={styles.date}>{todayLabel()}</Text>
       </View>
-      {email ? <Avatar name={displayName || email} size={44} /> : null}
+      {email ? <Avatar name={displayName || email} size={40} /> : null}
     </View>
   );
 }
@@ -38,14 +46,13 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.lg,
   },
   greeting: {
-    fontSize: fontSizes.sm,
-    fontWeight: fontWeights.medium,
-    color: colors.textMuted,
-  },
-  name: {
     fontSize: fontSizes.xl,
-    fontWeight: fontWeights.bold,
+    fontWeight: fontWeights.semibold,
     color: colors.textPrimary,
+  },
+  date: {
+    fontSize: fontSizes.sm,
+    color: colors.textMuted,
     marginTop: 2,
   },
 });

@@ -15,7 +15,6 @@ import { logout } from '../../lib/auth';
 import type { User } from '../../lib/types';
 import Avatar from '../../components/ui/Avatar';
 import Button from '../../components/ui/Button';
-import Card from '../../components/ui/Card';
 import { colors, fontSizes, fontWeights, radii, spacing } from '../../theme';
 
 export default function Profile() {
@@ -69,6 +68,11 @@ export default function Profile() {
   }
 
   const avatarName = user?.displayName || user?.email || '?';
+  const headingName = user?.displayName || 'My Profile';
+
+  const memberSince = user?.timeJoined
+    ? new Date(user.timeJoined).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+    : null;
 
   if (loading) {
     return (
@@ -84,52 +88,66 @@ export default function Profile() {
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
     >
-      <View style={styles.avatarRow}>
-        <Avatar name={avatarName} size={72} />
-        <Text style={styles.emailText}>{user?.email}</Text>
+      <View style={styles.avatarSection}>
+        <Avatar name={avatarName} size={80} />
+        <Text style={styles.heading}>{headingName}</Text>
       </View>
 
-      <Card style={styles.card}>
-        <Text style={styles.sectionLabel}>Display name</Text>
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>Account Details</Text>
+          {!editing && (
+            <Pressable onPress={handleEditPress} style={styles.editBtn}>
+              <Text style={styles.editBtnText}>Edit</Text>
+            </Pressable>
+          )}
+        </View>
 
-        {editing ? (
-          <View>
+        <View style={styles.field}>
+          <Text style={styles.fieldLabel}>DISPLAY NAME</Text>
+          {editing ? (
             <TextInput
               ref={inputRef}
               style={styles.nameInput}
               value={displayName}
               onChangeText={setDisplayName}
-              placeholder="Enter a display name"
+              placeholder="Your name"
               placeholderTextColor={colors.textMuted}
               returnKeyType="done"
               onSubmitEditing={handleSave}
             />
-            <View style={styles.editActions}>
-              <Pressable onPress={handleCancel} style={styles.cancelBtn}>
-                <Text style={styles.cancelText}>Cancel</Text>
-              </Pressable>
-              <Button
-                label="Save"
-                variant="primary"
-                loading={saving}
-                onPress={handleSave}
-                style={styles.saveBtn}
-              />
-            </View>
+          ) : (
+            <Text style={styles.fieldValue}>{user?.displayName || '—'}</Text>
+          )}
+        </View>
+
+        <View style={styles.field}>
+          <Text style={styles.fieldLabel}>MEMBER SINCE</Text>
+          <Text style={styles.fieldValue}>{memberSince ?? '—'}</Text>
+        </View>
+
+        {editing && (
+          <View style={styles.editActions}>
+            <Button
+              label="Save"
+              variant="primary"
+              loading={saving}
+              onPress={handleSave}
+              style={styles.saveBtn}
+            />
+            <Button
+              label="Cancel"
+              variant="outline"
+              onPress={handleCancel}
+              style={styles.cancelBtn}
+            />
           </View>
-        ) : (
-          <Pressable style={styles.nameRow} onPress={handleEditPress}>
-            <Text style={[styles.nameText, !user?.displayName && styles.namePlaceholder]}>
-              {user?.displayName || 'Tap to add a display name'}
-            </Text>
-            <Text style={styles.editHint}>Edit</Text>
-          </Pressable>
         )}
-      </Card>
+      </View>
 
       <Button
         label="Log out"
-        variant="outline"
+        variant="primary"
         loading={loggingOut}
         onPress={handleLogout}
         style={styles.logoutBtn}
@@ -144,8 +162,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   content: {
-    padding: spacing.lg,
+    paddingHorizontal: spacing.lg,
     paddingTop: spacing.xl,
+    paddingBottom: spacing.xxl,
     gap: spacing.lg,
   },
   center: {
@@ -154,78 +173,88 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: colors.background,
   },
-  avatarRow: {
+  avatarSection: {
     alignItems: 'center',
     gap: spacing.md,
-    paddingBottom: spacing.sm,
+    paddingBottom: spacing.xs,
   },
-  emailText: {
-    fontSize: fontSizes.md,
-    color: colors.textSecondary,
-    fontWeight: fontWeights.medium,
+  heading: {
+    fontSize: fontSizes.xl,
+    fontWeight: fontWeights.semibold,
+    color: colors.textPrimary,
   },
   card: {
-    gap: spacing.sm,
+    backgroundColor: colors.white,
+    borderRadius: radii.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    shadowColor: colors.textPrimary,
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+    padding: spacing.lg,
+    gap: spacing.md,
   },
-  sectionLabel: {
-    fontSize: fontSizes.xs,
-    fontWeight: '600',
-    color: colors.textSecondary,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-    marginBottom: spacing.xs,
-  },
-  nameRow: {
+  cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingBottom: spacing.xs,
   },
-  nameText: {
+  cardTitle: {
     fontSize: fontSizes.md,
-    color: colors.textPrimary,
-    fontWeight: fontWeights.medium,
-    flex: 1,
-  },
-  namePlaceholder: {
-    color: colors.textMuted,
-    fontStyle: 'italic',
-  },
-  editHint: {
-    fontSize: fontSizes.sm,
-    color: colors.primary,
     fontWeight: fontWeights.semibold,
+    color: colors.textPrimary,
+  },
+  editBtn: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+  },
+  editBtnText: {
+    fontSize: fontSizes.sm,
+    color: colors.textMuted,
+    fontWeight: fontWeights.medium,
+  },
+  field: {
+    gap: 4,
+  },
+  fieldLabel: {
+    fontSize: fontSizes.xs,
+    fontWeight: '600',
+    color: colors.textMuted,
+    letterSpacing: 0.5,
+  },
+  fieldValue: {
+    fontSize: fontSizes.sm,
+    color: colors.textPrimary,
   },
   nameInput: {
-    height: 48,
-    borderRadius: radii.lg,
-    borderWidth: 1.5,
-    borderColor: colors.primaryLight,
-    paddingHorizontal: 14,
-    fontSize: fontSizes.md,
+    height: 40,
+    borderRadius: radii.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: 12,
+    fontSize: fontSizes.sm,
     color: colors.textPrimary,
-    backgroundColor: colors.white,
-    marginBottom: spacing.sm,
+    backgroundColor: colors.background,
   },
   editActions: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
     gap: spacing.sm,
-  },
-  cancelBtn: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  cancelText: {
-    fontSize: fontSizes.sm,
-    color: colors.textSecondary,
-    fontWeight: fontWeights.medium,
+    paddingTop: spacing.xs,
   },
   saveBtn: {
-    height: 40,
+    height: 36,
     paddingHorizontal: spacing.lg,
+    flex: 0,
+  },
+  cancelBtn: {
+    height: 36,
+    paddingHorizontal: spacing.lg,
+    flex: 0,
   },
   logoutBtn: {
-    marginTop: spacing.sm,
+    width: '100%',
   },
 });

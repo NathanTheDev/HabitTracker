@@ -1,7 +1,7 @@
 import { ActivityIndicator, Pressable, PressableProps, StyleSheet, Text } from 'react-native';
 import { colors, radii, fontSizes, fontWeights } from '../../theme';
 
-type Variant = 'primary' | 'outline' | 'ghost';
+type Variant = 'primary' | 'outline' | 'ghost' | 'secondary';
 
 type Props = PressableProps & {
   label: string;
@@ -37,7 +37,7 @@ export default function Button({ label, variant = 'primary', loading, disabled, 
 
 const styles = StyleSheet.create({
   base: {
-    height: 50,
+    height: 44,
     borderRadius: radii.lg,
     alignItems: 'center',
     justifyContent: 'center',
@@ -59,15 +59,15 @@ const styles = StyleSheet.create({
   },
 
   outline: {
-    backgroundColor: 'transparent',
-    borderWidth: 1.5,
-    borderColor: colors.primary,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   outlineDisabled: {
-    borderColor: '#DCCFCD',
+    opacity: 0.5,
   },
   outlineLabel: {
-    color: colors.primary,
+    color: colors.textPrimary,
   },
 
   ghost: {
@@ -75,6 +75,16 @@ const styles = StyleSheet.create({
   },
   ghostDisabled: {},
   ghostLabel: {
-    color: colors.primary,
+    color: colors.textPrimary,
+  },
+
+  secondary: {
+    backgroundColor: colors.muted,
+  },
+  secondaryDisabled: {
+    opacity: 0.5,
+  },
+  secondaryLabel: {
+    color: colors.textSecondary,
   },
 });
