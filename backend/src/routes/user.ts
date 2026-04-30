@@ -5,5 +5,6 @@ import * as userController from "../controllers/userController";
 const router = Router();
 
 router.get("/me", verifySession(), userController.getMe);
+router.patch("/me", verifySession(), userController.updateMe);
 
 export default router;

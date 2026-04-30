@@ -88,5 +88,10 @@ export const api = {
 
   user: {
     me: () => request<User>('/api/user/me'),
+    updateMe: (displayName: string | null) =>
+      request<{ displayName: string | null }>('/api/user/me', {
+        method: 'PATCH',
+        body: JSON.stringify({ displayName }),
+      }),
   },
 };

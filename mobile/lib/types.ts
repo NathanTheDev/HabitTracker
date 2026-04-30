@@ -39,4 +39,5 @@ export type CreateCompletionInput = {
 export interface User {
   email: string;
   timeJoined: number;
+  displayName: string | null;
 }

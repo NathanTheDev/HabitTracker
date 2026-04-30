@@ -30,6 +30,11 @@ model Habit {
   @@index([userId])
 }
 
+model UserProfile {
+  userId      String  @id
+  displayName String?
+}
+
 model HabitCompletion {
   id               String   @id @default(cuid())
   habitId          String
