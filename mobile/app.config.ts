@@ -15,10 +15,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     resizeMode: 'contain',
     backgroundColor: '#ffffff',
   },
-  ios: {
-    supportsTablet: true,
-    bundleIdentifier: 'com.nathanthedev.habittracker',
-  },
   android: {
     package: 'com.nathanthedev.habittracker',
     adaptiveIcon: {
