@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { Feather } from '@expo/vector-icons';
 import { api } from '../../lib/api';
 import type { Habit, User } from '../../lib/types';
@@ -40,21 +41,29 @@ type ListItem =
   | { type: 'progress'; done: number; total: number }
   | { type: 'sectionHeader'; label: string; showAdd?: boolean }
   | { type: 'habit'; habit: Habit }
-  | { type: 'empty'; message: string };
+  | { type: 'empty'; message: string; isError?: boolean };
 
 export default function Dashboard() {
   const router = useRouter();
+  const tabBarHeight = useBottomTabBarHeight();
   const [habits, setHabits] = useState<Habit[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    const [habitsData, userData] = await Promise.all([
-      api.habits.list(),
-      api.user.me(),
-    ]);
-    setHabits(habitsData);
-    setUser(userData);
+    setLoadError(null);
+    try {
+      const [habitsData, userData] = await Promise.all([
+        api.habits.list(),
+        api.user.me(),
+      ]);
+      setHabits(habitsData);
+      setUser(userData);
+    } catch (e) {
+      console.error('[dashboard load]', e);
+      setLoadError('Could not load data. Pull down to retry.');
+    }
   }, []);
 
   useEffect(() => { load(); }, [load]);
@@ -74,9 +83,11 @@ export default function Dashboard() {
     { type: 'progress', done: doneCount, total: totalCount },
     { type: 'chart' },
     { type: 'sectionHeader', label: 'Today', showAdd: true },
-    ...(pending.length === 0
-      ? [{ type: 'empty' as const, message: 'All done for today!' }]
-      : pending.map((h) => ({ type: 'habit' as const, habit: h }))),
+    ...(loadError
+      ? [{ type: 'empty' as const, message: loadError, isError: true }]
+      : pending.length === 0
+        ? [{ type: 'empty' as const, message: 'All done for today!' }]
+        : pending.map((h) => ({ type: 'habit' as const, habit: h }))),
     ...(completed.length > 0
       ? [
           { type: 'sectionHeader' as const, label: 'Completed' },
@@ -133,7 +144,7 @@ export default function Dashboard() {
     if (item.type === 'empty') {
       return (
         <View style={styles.emptyCard}>
-          <Text style={styles.emptyText}>{item.message}</Text>
+          <Text style={[styles.emptyText, item.isError && styles.errorText]}>{item.message}</Text>
         </View>
       );
     }
@@ -174,7 +185,7 @@ export default function Dashboard() {
           return `${item.type}-${i}`;
         }}
         renderItem={renderItem}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={[styles.list, { paddingBottom: tabBarHeight + 16 }]}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -193,9 +204,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  list: {
-    paddingBottom: 40,
-  },
+  list: {},
   chartWrapper: {
     marginBottom: spacing.sm,
   },
@@ -272,5 +281,9 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: fontSizes.md,
     color: colors.textMuted,
+    textAlign: 'center',
+  },
+  errorText: {
+    color: '#C0504D',
   },
 });

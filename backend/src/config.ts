@@ -5,7 +5,7 @@ const schema = z.object({
     .enum(["development", "production", "test"])
     .default("development"),
   PORT: z.coerce.number().default(3001),
-  FRONTEND_ORIGIN: z.string().url(),
+  FRONTEND_ORIGINS: z.string().min(1),
   DATABASE_URL: z.string().min(1),
   SUPERTOKENS_CONNECTION_URI: z.string().url(),
   SUPERTOKENS_API_KEY: z.string().min(1),

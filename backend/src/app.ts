@@ -16,9 +16,11 @@ const app = express();
 
 app.use(helmet());
 
+const allowedOrigins = config.FRONTEND_ORIGINS.split(",").map((o) => o.trim());
+
 app.use(
   cors({
-    origin: config.FRONTEND_ORIGIN,
+    origin: allowedOrigins,
     credentials: true,
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "st-auth-mode", ...require("supertokens-node").getAllCORSHeaders()],

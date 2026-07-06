@@ -12,7 +12,7 @@ SuperTokens.init({
   appInfo: {
     appName: "HabitTracker",
     apiDomain: `http://localhost:${config.PORT}`,
-    websiteDomain: config.FRONTEND_ORIGIN,
+    websiteDomain: config.FRONTEND_ORIGINS.split(",")[0].trim(),
     apiBasePath: "/api/auth",
     websiteBasePath: "/auth",
   },

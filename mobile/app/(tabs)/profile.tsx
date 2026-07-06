@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import {
   ActivityIndicator,
   Alert,
@@ -19,6 +20,7 @@ import { colors, fontSizes, fontWeights, radii, spacing } from '../../theme';
 
 export default function Profile() {
   const router = useRouter();
+  const tabBarHeight = useBottomTabBarHeight();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -85,7 +87,7 @@ export default function Profile() {
   return (
     <ScrollView
       style={styles.scroll}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingBottom: tabBarHeight + spacing.xl }]}
       keyboardShouldPersistTaps="handled"
     >
       <View style={styles.avatarSection}>
@@ -164,7 +166,7 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.xl,
-    paddingBottom: spacing.xxl,
+    paddingBottom: 0,
     gap: spacing.lg,
   },
   center: {

@@ -25,7 +25,8 @@ export default function Auth() {
       const res = await sendOtp(email.trim().toLowerCase());
       setSession({ deviceId: res.deviceId, preAuthSessionId: res.preAuthSessionId });
       setStep('otp');
-    } catch {
+    } catch (e) {
+      console.error('[sendOtp]', e);
       setError('Failed to send code. Check your email and try again.');
     } finally {
       setLoading(false);
