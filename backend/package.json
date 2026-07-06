@@ -16,8 +16,8 @@
     "date-fns": "^3",
     "express": "^4",
     "express-rate-limit": "^7",
+    "firebase-admin": "^12.7.0",
     "helmet": "^8",
-    "supertokens-node": "^19",
     "zod": "^3"
   },
   "devDependencies": {

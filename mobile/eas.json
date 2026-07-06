@@ -15,7 +15,11 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "http://localhost:3001"
+        "EXPO_PUBLIC_API_URL": "http://localhost:3001",
+        "EXPO_PUBLIC_FIREBASE_API_KEY": "<your-firebase-web-api-key>",
+        "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "<your-project-id>.firebaseapp.com",
+        "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "<your-project-id>",
+        "EXPO_PUBLIC_FIREBASE_APP_ID": "<your-firebase-app-id>"
       }
     },
     "preview": {
@@ -26,7 +30,11 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://api.habittracker.app"
+        "EXPO_PUBLIC_API_URL": "https://api.habittracker.app",
+        "EXPO_PUBLIC_FIREBASE_API_KEY": "<your-firebase-web-api-key>",
+        "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "<your-project-id>.firebaseapp.com",
+        "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "<your-project-id>",
+        "EXPO_PUBLIC_FIREBASE_APP_ID": "<your-firebase-app-id>"
       }
     },
     "production": {
@@ -37,7 +45,11 @@
         "buildType": "app-bundle"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://api.habittracker.app"
+        "EXPO_PUBLIC_API_URL": "https://api.habittracker.app",
+        "EXPO_PUBLIC_FIREBASE_API_KEY": "<your-firebase-web-api-key>",
+        "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "<your-project-id>.firebaseapp.com",
+        "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "<your-project-id>",
+        "EXPO_PUBLIC_FIREBASE_APP_ID": "<your-firebase-app-id>"
       }
     }
   },

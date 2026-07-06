@@ -3,24 +3,31 @@ import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { storage } from '../lib/storage';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { auth } from '../lib/firebase';
 
 export default function RootLayout() {
   const router = useRouter();
   const segments = useSegments();
+  const [user, setUser] = useState<User | null>(null);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    storage.getAccess().then((token) => {
-      const inAuth = segments[0] === 'auth';
-      if (!token && !inAuth) {
-        router.replace('/auth');
-      } else if (token && inAuth) {
-        router.replace('/(tabs)/');
-      }
+    return onAuthStateChanged(auth, (u) => {
+      setUser(u);
       setReady(true);
     });
   }, []);
+
+  useEffect(() => {
+    if (!ready) return;
+    const inAuth = segments[0] === 'auth';
+    if (!user && !inAuth) {
+      router.replace('/auth');
+    } else if (user && inAuth) {
+      router.replace('/(tabs)/');
+    }
+  }, [ready, user, segments]);
 
   if (!ready) return null;
 

@@ -1,62 +1,47 @@
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { sendOtp, verifyOtp } from '../lib/auth';
-import OtpInput from '../components/OtpInput';
+import { signIn, signUp } from '../lib/auth';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { colors, fontSizes, fontWeights, spacing } from '../theme';
 
-type Step = 'email' | 'otp';
+type Mode = 'signIn' | 'signUp';
 
 export default function Auth() {
   const router = useRouter();
-  const [step, setStep] = useState<Step>('email');
+  const [mode, setMode] = useState<Mode>('signIn');
   const [email, setEmail] = useState('');
-  const [session, setSession] = useState<{ deviceId: string; preAuthSessionId: string } | null>(null);
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSendOtp = async () => {
-    if (!email.trim()) return;
+  const handleSubmit = async () => {
+    if (!email.trim() || !password) return;
     setLoading(true);
     setError(null);
     try {
-      const res = await sendOtp(email.trim().toLowerCase());
-      setSession({ deviceId: res.deviceId, preAuthSessionId: res.preAuthSessionId });
-      setStep('otp');
-    } catch (e) {
-      console.error('[sendOtp]', e);
-      setError('Failed to send code. Check your email and try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyOtp = async (code: string) => {
-    if (!session) return;
-    setLoading(true);
-    setError(null);
-    try {
-      await verifyOtp(session.deviceId, session.preAuthSessionId, code);
+      if (mode === 'signIn') {
+        await signIn(email.trim().toLowerCase(), password);
+      } else {
+        await signUp(email.trim().toLowerCase(), password);
+      }
       router.replace('/(tabs)/');
-    } catch {
-      setError('Invalid code. Please try again.');
+    } catch (e) {
+      console.error(`[${mode}]`, e);
+      setError(
+        mode === 'signIn'
+          ? 'Invalid email or password.'
+          : 'Failed to create account. Check your email and password.'
+      );
+    } finally {
       setLoading(false);
     }
   };
 
-  const handleResend = async () => {
-    setLoading(true);
+  const toggleMode = () => {
+    setMode((m) => (m === 'signIn' ? 'signUp' : 'signIn'));
     setError(null);
-    try {
-      const res = await sendOtp(email.trim().toLowerCase());
-      setSession({ deviceId: res.deviceId, preAuthSessionId: res.preAuthSessionId });
-    } catch {
-      setError('Failed to resend code.');
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
@@ -67,49 +52,51 @@ export default function Auth() {
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>
-            {step === 'email' ? 'Sign in to HabitTracker' : 'Check your email'}
+            {mode === 'signIn' ? 'Sign in to HabitTracker' : 'Create your account'}
           </Text>
           <Text style={styles.subtitle}>
-            {step === 'email'
-              ? "We'll send you a one-time code to sign in."
-              : `We sent a 6-digit code to ${email}`}
+            {mode === 'signIn'
+              ? 'Welcome back! Enter your details to continue.'
+              : 'Enter an email and password to get started.'}
           </Text>
         </View>
 
-        {step === 'email' ? (
-          <View style={styles.form}>
-            <Input
-              value={email}
-              onChangeText={setEmail}
-              placeholder="you@example.com"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-              returnKeyType="send"
-              onSubmitEditing={handleSendOtp}
-            />
-            {error && <Text style={styles.error}>{error}</Text>}
-            <Button
-              label="Send code"
-              onPress={handleSendOtp}
-              disabled={!email.trim()}
-              loading={loading}
-              style={styles.fullWidth}
-            />
-          </View>
-        ) : (
-          <View style={styles.form}>
-            <OtpInput onComplete={handleVerifyOtp} disabled={loading} />
-            {error && <Text style={[styles.error, styles.centered]}>{error}</Text>}
-            <Button
-              label="Resend code"
-              variant="outline"
-              onPress={handleResend}
-              disabled={loading}
-              style={styles.fullWidth}
-            />
-          </View>
-        )}
+        <View style={styles.form}>
+          <Input
+            value={email}
+            onChangeText={setEmail}
+            placeholder="you@example.com"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoComplete="email"
+            returnKeyType="next"
+          />
+          <Input
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Password"
+            secureTextEntry
+            autoCapitalize="none"
+            autoComplete="password"
+            returnKeyType="send"
+            onSubmitEditing={handleSubmit}
+          />
+          {error && <Text style={styles.error}>{error}</Text>}
+          <Button
+            label={mode === 'signIn' ? 'Sign in' : 'Create account'}
+            onPress={handleSubmit}
+            disabled={!email.trim() || !password}
+            loading={loading}
+            style={styles.fullWidth}
+          />
+          <Pressable onPress={toggleMode} disabled={loading}>
+            <Text style={styles.switchText}>
+              {mode === 'signIn'
+                ? "Don't have an account? Create one"
+                : 'Already have an account? Sign in'}
+            </Text>
+          </Pressable>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
@@ -154,7 +141,9 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.sm,
     color: '#C0504D',
   },
-  centered: {
+  switchText: {
+    fontSize: fontSizes.sm,
+    color: colors.textSecondary,
     textAlign: 'center',
   },
 });

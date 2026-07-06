@@ -1,5 +1,5 @@
 import { logout } from './auth';
-import { storage } from './storage';
+import { auth } from './firebase';
 import type {
   CreateCompletionInput,
   CreateHabitInput,
@@ -11,41 +11,24 @@ import type {
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
-async function refreshTokens(): Promise<boolean> {
-  const refresh = await storage.getRefresh();
-  if (!refresh) return false;
-
-  const res = await fetch(`${BASE_URL}/api/auth/session/refresh`, {
-    method: 'POST',
-    headers: { 'st-auth-mode': 'header', Authorization: `Bearer ${refresh}` },
-  });
-
-  if (!res.ok) return false;
-
-  const newAccess = res.headers.get('st-access-token');
-  const newRefresh = res.headers.get('st-refresh-token');
-  if (!newAccess) return false;
-
-  await storage.setTokens(newAccess, newRefresh ?? refresh);
-  return true;
-}
-
 async function request<T>(path: string, init?: RequestInit, isRetry = false): Promise<T> {
-  const token = await storage.getAccess();
+  const token = await auth.currentUser?.getIdToken();
 
   const res = await fetch(`${BASE_URL}${path}`, {
     ...init,
     headers: {
       'Content-Type': 'application/json',
-      'st-auth-mode': 'header',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...init?.headers,
     },
   });
 
-  if (res.status === 401 && !isRetry) {
-    const refreshed = await refreshTokens();
-    if (refreshed) return request<T>(path, init, true);
+  if (res.status === 401 && !isRetry && auth.currentUser) {
+    await auth.currentUser.getIdToken(true);
+    return request<T>(path, init, true);
+  }
+
+  if (res.status === 401) {
     await logout();
     throw new Error('Session expired');
   }

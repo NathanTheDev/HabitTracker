@@ -1,21 +1,21 @@
 import { Response } from "express";
-import { SessionRequest } from "supertokens-node/framework/express";
-import { getUser } from "supertokens-node";
+import { AuthedRequest } from "../middleware/auth";
+import { firebaseAuth } from "../firebase";
 import prisma from "../prisma";
 
-export async function getMe(req: SessionRequest, res: Response) {
-  const userId = req.session!.getUserId();
+export async function getMe(req: AuthedRequest, res: Response) {
+  const userId = req.userId!;
   const [user, profile] = await Promise.all([
-    getUser(userId),
+    firebaseAuth.getUser(userId),
     prisma.userProfile.findUnique({ where: { userId } }),
   ]);
   if (!user) return res.status(404).json({ message: "User not found" });
-  const login = user.loginMethods[0];
-  res.json({ email: login?.email, timeJoined: user.timeJoined, displayName: profile?.displayName ?? null });
+  const timeJoined = new Date(user.metadata.creationTime).getTime();
+  res.json({ email: user.email, timeJoined, displayName: profile?.displayName ?? null });
 }
 
-export async function updateMe(req: SessionRequest, res: Response) {
-  const userId = req.session!.getUserId();
+export async function updateMe(req: AuthedRequest, res: Response) {
+  const userId = req.userId!;
   const { displayName } = req.body as { displayName?: string };
 
   const profile = await prisma.userProfile.upsert({

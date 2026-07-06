@@ -7,8 +7,9 @@ const schema = z.object({
   PORT: z.coerce.number().default(3001),
   FRONTEND_ORIGINS: z.string().min(1),
   DATABASE_URL: z.string().min(1),
-  SUPERTOKENS_CONNECTION_URI: z.string().url(),
-  SUPERTOKENS_API_KEY: z.string().min(1),
+  FIREBASE_PROJECT_ID: z.string().min(1),
+  FIREBASE_CLIENT_EMAIL: z.string().min(1),
+  FIREBASE_PRIVATE_KEY: z.string().min(1),
 });
 
 const parsed = schema.safeParse(process.env);

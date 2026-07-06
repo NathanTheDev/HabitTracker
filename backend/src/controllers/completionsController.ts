@@ -1,12 +1,12 @@
 import { Response, NextFunction } from "express";
-import { SessionRequest } from "supertokens-node/framework/express";
+import { AuthedRequest } from "../middleware/auth";
 
 import * as completionService from "../services/completionService";
 import { habitCompletionResponseSchema } from "../schemas/habits";
 
-export async function getCompletions(req: SessionRequest, res: Response, next: NextFunction) {
+export async function getCompletions(req: AuthedRequest, res: Response, next: NextFunction) {
   try {
-    const userId = req.session!.getUserId();
+    const userId = req.userId!;
     const completions = await completionService.getAll(userId, req.params.id);
     if (!completions) return void res.sendStatus(404);
     res.json(habitCompletionResponseSchema.array().parse(completions));
@@ -15,9 +15,9 @@ export async function getCompletions(req: SessionRequest, res: Response, next: N
   }
 }
 
-export async function createCompletion(req: SessionRequest, res: Response, next: NextFunction) {
+export async function createCompletion(req: AuthedRequest, res: Response, next: NextFunction) {
   try {
-    const userId = req.session!.getUserId();
+    const userId = req.userId!;
     const completion = await completionService.create(userId, req.params.id, {
       completedAt: req.body.completedAt as string | undefined,
       quantityProgress: req.body.quantityProgress,
@@ -30,9 +30,9 @@ export async function createCompletion(req: SessionRequest, res: Response, next:
   }
 }
 
-export async function deleteCompletion(req: SessionRequest, res: Response, next: NextFunction) {
+export async function deleteCompletion(req: AuthedRequest, res: Response, next: NextFunction) {
   try {
-    const userId = req.session!.getUserId();
+    const userId = req.userId!;
     const result = await completionService.deleteForDate(
       userId,
       req.params.id,

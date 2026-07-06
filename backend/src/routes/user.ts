@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { verifySession } from "supertokens-node/recipe/session/framework/express";
+import { requireAuth } from "../middleware/auth";
 import * as userController from "../controllers/userController";
 
 const router = Router();
 
-router.get("/me", verifySession(), userController.getMe);
-router.patch("/me", verifySession(), userController.updateMe);
+router.get("/me", requireAuth, userController.getMe);
+router.patch("/me", requireAuth, userController.updateMe);
 
 export default router;

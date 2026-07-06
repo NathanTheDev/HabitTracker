@@ -18,7 +18,7 @@ generator client {
 
 model Habit {
   id          String            @id @default(cuid())
-  userId      String            // SuperTokens user ID — no FK, ST owns user data
+  userId      String            // Firebase UID — no FK, Firebase owns user data
   name        String
   description String?
   frequency   String            @default("DAILY") // "DAILY" | "WEEKLY"
